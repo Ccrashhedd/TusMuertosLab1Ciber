@@ -1,0 +1,92 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<div class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-12">
+    <!-- Decorative Background Element -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute top-1/4 -right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 -left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+    </div>
+    
+    <section class="max-w-md w-full">
+        <div class="glass-card shadow-[0_8px_32px_rgba(211,96,61,0.08)] rounded-[1.5rem] p-8 md:p-10 border border-white/20">
+            <header class="text-center mb-8">
+                <h1 class="font-headline-md text-headline-md text-on-surface mb-2">Crear una cuenta</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">Únete a nuestra mesa y disfruta de experiencias gastronómicas únicas.</p>
+            </header>
+            
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="space-y-5">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                <!-- Email -->
+                <div class="space-y-1.5">
+                    <label asp-for="Input.Email" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Correo Electrónico</label>
+                    <input asp-for="Input.Email" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all" placeholder="hola@ejemplo.com" autocomplete="username" aria-required="true" />
+                    <span asp-validation-for="Input.Email" class="text-error text-sm mt-1"></span>
+                </div>
+                
+                <!-- Password -->
+                <div class="space-y-1.5">
+                    <label asp-for="Input.Password" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Contraseña</label>
+                    <div class="relative">
+                        <input asp-for="Input.Password" id="password" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all" placeholder="••••••••" autocomplete="new-password" aria-required="true" />
+                        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button" onclick="togglePassword('password')">
+                            <span class="material-symbols-outlined text-[20px]" id="passwordIcon">visibility</span>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-error text-sm mt-1"></span>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="space-y-1.5">
+                    <label asp-for="Input.ConfirmPassword" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Confirmar Contraseña</label>
+                    <div class="relative">
+                        <input asp-for="Input.ConfirmPassword" id="confirmPassword" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all" placeholder="••••••••" autocomplete="new-password" aria-required="true" />
+                        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant" type="button" onclick="togglePassword('confirmPassword')">
+                            <span class="material-symbols-outlined text-[20px]" id="confirmPasswordIcon">visibility</span>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-error text-sm mt-1"></span>
+                </div>
+
+                <!-- CTA -->
+                <div class="pt-4">
+                    <button id="registerSubmit" type="submit" class="w-full bg-primary text-on-primary font-title-lg py-4 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all transform active:scale-[0.98]">
+                        Crear Cuenta
+                    </button>
+                </div>
+                
+                <div class="text-center pt-4">
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        ¿Ya tienes cuenta? 
+                        <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="text-secondary font-semibold hover:underline ml-1">Inicia sesión</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Side Visual/Inspiration -->
+        <div class="mt-8 text-center px-4">
+            <p class="italic text-on-surface-variant/60 font-body-md">"La cocina es un lenguaje mediante el cual se puede expresar armonía, felicidad, belleza, poesía."</p>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + "Icon");
+            
+            if (input && icon) {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                icon.textContent = isPassword ? 'visibility_off' : 'visibility';
+            }
+        }
+    </script>
+}

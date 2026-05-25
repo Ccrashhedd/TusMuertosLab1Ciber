@@ -1,0 +1,125 @@
+@model IEnumerable<Comidasa.Models.Product>
+@{
+    ViewData["Title"] = "Sabor & Brasa";
+    
+    var entradas = Model.Where(p => p.Category == "Entradas").ToList();
+    var platosFuertes = Model.Where(p => p.Category == "Platos Fuertes").ToList();
+    var postres = Model.Where(p => p.Category == "Postres").ToList();
+}
+
+<!-- Hero Section -->
+<section class="relative h-[614px] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFH-ZEdcddQLIDKJYOYafUI1Dfru1xyN-y5uYZ319aJ2g9KkJHiqCK7_DqiJH6NqARjUREHOVBkmOOsTsc9O_fTP940MKTBcezWjuuULpJ61BlWSZAosdNwOvEo6ucaSdckJsqkKEfJy3JLbbac8etDdsFg8Evpn5zzCCqjTo9HKzOzYmpIlxiaTlBe4Nnd8eVaPvEqe76KwiTpMNNAhlLPcdnJVsVat2Uk-LNBxaNKLrPa06w0yY2Q0ldV_mSjN4CYH4PYvSgvko" />
+        <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+    <div class="relative z-10 text-center px-margin-mobile">
+        <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white mb-4">La esencia del fuego y la tierra.</h1>
+        <p class="font-body-lg text-white/90 max-w-2xl mx-auto mb-8">Nuestros ingredientes nacen del campo y se transforman en nuestra brasa para ofrecerte una experiencia honesta, táctil y vibrante.</p>
+        <div class="flex gap-4 justify-center">
+            <a class="bg-primary text-white px-8 py-3 rounded-lg font-title-lg shadow-xl hover:scale-105 transition-transform" href="#menu">Explorar Menú</a>
+            <a class="bg-white/10 backdrop-blur-md text-white border border-white/30 px-8 py-3 rounded-lg font-title-lg hover:bg-white/20 transition-all" href="#">Nuestra Historia</a>
+        </div>
+    </div>
+</section>
+
+<!-- Menu Navigation (Tabs) -->
+<div class="category-header bg-surface/90 backdrop-blur-sm border-b border-surface-variant px-margin-desktop py-4" id="menu">
+    <div class="max-w-container-max mx-auto flex gap-8">
+        <a class="font-label-sm uppercase tracking-widest text-primary border-b-2 border-primary pb-2" href="#entradas">Entradas</a>
+        <a class="font-label-sm uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors pb-2" href="#platos-fuertes">Platos Fuertes</a>
+        <a class="font-label-sm uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors pb-2" href="#postres">Postres</a>
+    </div>
+</div>
+
+<div class="px-margin-desktop py-12 max-w-container-max mx-auto">
+    
+    <!-- Entradas Section -->
+    @if(entradas.Any())
+    {
+        <section class="mb-20" id="entradas">
+            <div class="mb-10 flex items-end gap-4">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Para Comenzar</h2>
+                <span class="h-[1px] flex-grow bg-outline-variant mb-4"></span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+                @foreach (var item in entradas)
+                {
+                    <div class="bg-white rounded-xl overflow-hidden shadow-[0_10px_30px_rgba(211,96,61,0.08)] hover:translate-y-[-4px] transition-all duration-300">
+                        <div class="h-56 relative overflow-hidden">
+                            <img class="w-full h-full object-cover" src="@item.ImagenProduct" />
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-title-lg text-on-surface">@item.NameProduct</h3>
+                                <span class="text-secondary font-bold text-lg">$@item.Price.ToString("0.00")</span>
+                            </div>
+                            <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">@item.Descrip</p>
+                            <button class="w-full border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm">add</span> Agregar
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- Platos Fuertes Section -->
+    @if(platosFuertes.Any())
+    {
+        <section class="mb-20" id="platos-fuertes">
+            <div class="mb-10 flex items-end gap-4">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Platos Fuertes</h2>
+                <span class="h-[1px] flex-grow bg-outline-variant mb-4"></span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                @foreach (var item in platosFuertes)
+                {
+                    <div class="flex flex-col md:flex-row bg-white rounded-xl overflow-hidden shadow-lg border border-surface-variant/20 hover:shadow-2xl transition-all group">
+                        <div class="w-full md:w-1/2 h-64 md:h-auto overflow-hidden">
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="@item.ImagenProduct"/>
+                        </div>
+                        <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+                            <h3 class="font-headline-md text-on-surface mb-2">@item.NameProduct</h3>
+                            <p class="text-secondary font-bold text-xl mb-4">$@item.Price.ToString("0.00")</p>
+                            <p class="text-on-surface-variant mb-8 leading-relaxed">@item.Descrip</p>
+                            <button class="bg-primary text-white py-3 px-6 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">shopping_bag</span> Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- Postres Section -->
+    @if(postres.Any())
+    {
+        <section id="postres">
+            <div class="mb-10 flex items-end gap-4">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Final Dulce</h2>
+                <span class="h-[1px] flex-grow bg-outline-variant mb-4"></span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                @foreach(var item in postres)
+                {
+                    <div class="bg-surface-container-low rounded-xl p-4 flex gap-4 items-center border border-transparent hover:border-primary transition-all cursor-pointer">
+                        <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                            <img class="w-full h-full object-cover" src="@item.ImagenProduct"/>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-on-surface">@item.NameProduct</h4>
+                            <p class="text-xs text-on-surface-variant mb-2">@item.Descrip</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary font-bold">$@item.Price.ToString("0.00")</span>
+                                <button class="text-primary material-symbols-outlined text-xl">add_circle</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+</div>

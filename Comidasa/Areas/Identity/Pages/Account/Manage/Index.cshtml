@@ -1,0 +1,32 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Perfil";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3 class="font-title-lg text-title-lg text-on-surface mb-6">@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<form id="profile-form" method="post" class="space-y-5 max-w-md">
+    <div asp-validation-summary="ModelOnly" class="text-error" role="alert"></div>
+    
+    <div class="space-y-1.5">
+        <label asp-for="Username" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Nombre de Usuario</label>
+        <input asp-for="Username" class="w-full bg-surface-container-low border-0 border-b-2 border-surface-variant rounded-t-lg py-3 px-4 text-on-surface-variant opacity-70 cursor-not-allowed" disabled />
+    </div>
+
+    <div class="space-y-1.5">
+        <label asp-for="Input.PhoneNumber" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Teléfono</label>
+        <input asp-for="Input.PhoneNumber" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all" placeholder="Ingresa tu teléfono" />
+        <span asp-validation-for="Input.PhoneNumber" class="text-error text-sm mt-1"></span>
+    </div>
+
+    <button id="update-profile-button" type="submit" class="bg-primary text-on-primary font-title-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all mt-4">
+        Guardar Cambios
+    </button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

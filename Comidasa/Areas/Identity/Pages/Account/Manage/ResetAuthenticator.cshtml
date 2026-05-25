@@ -1,0 +1,28 @@
+@page
+@model ResetAuthenticatorModel
+@{
+    ViewData["Title"] = "Resetear clave de autenticación";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3 class="font-title-lg text-title-lg text-on-surface mb-6">@ViewData["Title"]</h3>
+
+<div class="bg-error-container text-on-error-container p-6 rounded-xl border border-error/20 mb-6 max-w-2xl">
+    <h4 class="font-bold flex items-center gap-2 text-lg mb-2">
+        <span class="material-symbols-outlined text-[24px]">warning</span> Si resetea su clave, su aplicación actual dejará de funcionar.
+    </h4>
+    <p class="font-body-md opacity-90 mb-2">
+        Este proceso deshabilita la autenticación de dos factores (2FA) hasta que verifique su aplicación
+        de autenticación nuevamente.
+    </p>
+    <p class="font-body-md opacity-90">
+        Si no completa el proceso de configuración en su aplicación de autenticación, podría perder el acceso a su cuenta.
+    </p>
+</div>
+
+<form method="post" class="mt-4">
+    <button id="reset-authenticator-button" type="submit" class="bg-error text-on-error font-title-lg py-3 px-6 rounded-lg hover:opacity-90 transition-all shadow-md">
+        Resetear Clave de Autenticación
+    </button>
+</form>

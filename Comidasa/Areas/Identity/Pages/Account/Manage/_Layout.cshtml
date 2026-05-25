@@ -1,0 +1,40 @@
+@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-12">
+    <!-- Decorative Background Element -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute top-1/4 -right-20 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 -left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+    </div>
+    
+    <section class="max-w-6xl w-full">
+        <div class="glass-card shadow-[0_8px_32px_rgba(211,96,61,0.08)] rounded-[1.5rem] p-8 md:p-10 border border-white/20">
+            <header class="mb-8 border-b border-surface-variant pb-4">
+                <h1 class="font-headline-md text-headline-md text-on-surface mb-2">Configuración de la Cuenta</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">Gestiona tus datos personales y configuración de seguridad.</p>
+            </header>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="w-full md:w-1/4 flex-shrink-0">
+                    <partial name="_ManageNav" />
+                </div>
+                <div class="w-full md:w-3/4">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

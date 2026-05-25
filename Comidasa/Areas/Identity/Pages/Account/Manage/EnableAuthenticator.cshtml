@@ -1,0 +1,62 @@
+@page
+@model EnableAuthenticatorModel
+@{
+    ViewData["Title"] = "Configurar aplicación de autenticación";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3 class="font-title-lg text-title-lg text-on-surface mb-4">@ViewData["Title"]</h3>
+
+<div class="max-w-3xl">
+    <p class="text-on-surface-variant mb-6 font-body-md">
+        Para usar una aplicación de autenticación, sigue estos pasos:
+    </p>
+    
+    <ol class="list-decimal list-inside space-y-6 text-on-surface-variant font-body-md">
+        <li class="bg-surface-container-low p-6 rounded-xl border border-surface-variant/30">
+            <p class="mb-2">
+                Descarga una aplicación de autenticación de dos factores como Microsoft Authenticator para
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825072" class="text-secondary font-bold hover:underline">Android</a> y
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825073" class="text-secondary font-bold hover:underline">iOS</a> o
+                Google Authenticator para
+                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en" class="text-secondary font-bold hover:underline">Android</a> y
+                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" class="text-secondary font-bold hover:underline">iOS</a>.
+            </p>
+        </li>
+        <li class="bg-surface-container-low p-6 rounded-xl border border-surface-variant/30">
+            <p class="mb-4">Escanea el código QR o ingresa esta clave <kbd class="bg-surface-variant text-on-surface px-2 py-1 rounded font-mono text-sm shadow-sm tracking-widest">@Model.SharedKey</kbd> en tu aplicación de autenticación. Los espacios no importan.</p>
+            <div id="qrCode" class="bg-white p-4 inline-block rounded-lg shadow-sm border border-outline-variant"></div>
+            <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
+        </li>
+        <li class="bg-surface-container-low p-6 rounded-xl border border-surface-variant/30">
+            <p class="mb-4">
+                Una vez que hayas escaneado el código QR o ingresado la clave, tu aplicación de autenticación te proporcionará un código único. Ingresa el código en el cuadro de confirmación a continuación.
+            </p>
+            <form id="send-code" method="post" class="space-y-4 max-w-sm">
+                <div class="space-y-1.5">
+                    <label asp-for="Input.Code" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Código de Verificación</label>
+                    <input asp-for="Input.Code" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all tracking-widest text-lg text-center" autocomplete="off" placeholder="123456" />
+                    <span asp-validation-for="Input.Code" class="text-error text-sm mt-1"></span>
+                </div>
+                <button type="submit" class="w-full bg-primary text-on-primary font-title-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all">Verificar Código</button>
+                <div asp-validation-summary="ModelOnly" class="text-error mt-2"></div>
+            </form>
+        </li>
+    </ol>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/qrcode.js"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrCode"), {
+            text: "@Html.Raw(Model.AuthenticatorUri)",
+            width: 150,
+            height: 150,
+            colorDark: "#191c1a",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
+}
