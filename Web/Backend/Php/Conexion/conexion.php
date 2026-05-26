@@ -9,15 +9,14 @@ CONST DB_PASS = '';
 
 function db() : PDO {
     
-$conexion = null;
+
 
 
     try {
         $conexion = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS);
         $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
-        echo 'Error de conexión: ' . $e->getMessage();
-        exit;
+        throw new Exception('Error de conexión a la base de datos: ' . $e->getMessage());
     }
 
 }

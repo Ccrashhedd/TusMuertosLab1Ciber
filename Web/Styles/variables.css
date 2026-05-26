@@ -1,0 +1,10 @@
+:root {
+    --color-principal: #d35400;
+    --color-secundario: #f39c12;
+    --color-fondo: #fff8f0;
+    --color-texto: #2c2c2c;
+    --color-blanco: #ffffff;
+
+    --radio: 12px;
+    --sombra: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
