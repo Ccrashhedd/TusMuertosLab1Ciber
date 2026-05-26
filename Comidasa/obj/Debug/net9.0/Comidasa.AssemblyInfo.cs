@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Comidasa")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41eebf6066b42865ad3a1c1cafef3eaf9e16d7f5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1cd75add61e790cf7f858ba08376f291c0d277e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("Comidasa")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Comidasa")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
