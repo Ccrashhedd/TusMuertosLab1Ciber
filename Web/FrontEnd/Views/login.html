@@ -1,17 +1,95 @@
-<section class="loginPage">
-    <div class="login">
-        <div class="loginFormContainer">
-            <h2>Iniciar sesión</h2>
-
-            <form id="loginForm" name="loginForm">
-                <label for="username">Usuario:</label>
-                <input type="text" name="username" id="username" required>
-
-                <label for="password">Contraseña:</label>
-                <input type="password" name="password" id="password" required>
-
-                <button type="submit">Ingresar</button>
-            </form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - Comidasa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Styles/main.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav-wrap">
+            <a href="../index.html" class="brand">Comidasa</a>
+            <nav class="nav-links" aria-label="Navegación principal">
+                <a href="./catalogo.html" >Catálogo</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="icon-link" type="button" aria-label="Carrito"><span class="material-symbols-outlined">shopping_cart</span></button>
+                <a href="./login.html" class="btn btn-sm btn-primary">Iniciar sesión</a>
+            </div>
         </div>
-    </div>
-</section>
+    </header>
+
+    <main class="login-main">
+        <section class="container login-grid">
+            <div class="login-copy">
+                <h1>Comida caliente<br><span>y fresca en tu puerta.</span></h1>
+                <p>Descubre una experiencia culinaria con productos frescos, atención rápida y pedidos fáciles de realizar.</p>
+                <img src="../Assets/plato.png" alt="Plato de comida">
+            </div>
+
+            <div class="login-card">
+                <div class="login-icon"><span class="material-symbols-outlined">account_circle</span></div>
+                <h2>Bienvenido de nuevo</h2>
+                <p>Ingresa tus credenciales para continuar</p>
+
+                <form id="loginForm">
+                    <label for="usuario">Usuario o Correo</label>
+                    <div class="input-box">
+                        <span class="material-symbols-outlined">person</span>
+                        <input id="usuario" name="usuario" type="text" placeholder="ej. juan.perez" required>
+                    </div>
+
+                    <label for="password">Contraseña</label>
+                    <div class="input-box">
+                        <span class="material-symbols-outlined">lock</span>
+                        <input id="password" name="password" type="password" placeholder="••••••••" required>
+                        <span class="material-symbols-outlined eye">visibility</span>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="check"><input type="checkbox"> Recordarme</label>
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" type="submit">Ingresar</button>
+                </form>
+
+                <div class="register-line">¿No tienes una cuenta? <a href="./registro.html">Regístrate gratis</a></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" id="footer">
+        <div class="container footer-grid">
+            <div>
+                <h2>Comidasa</h2>
+                <p>Sabor artesanal entregado en la puerta de tu casa. Calidad sin compromisos.</p>
+            </div>
+            <div>
+                <h3>Empresa</h3>
+                <a href="#">Sobre nosotros</a>
+                <a href="#">Sucursales</a>
+            </div>
+            <div>
+                <h3>Soporte</h3>
+                <a href="#">Contacto</a>
+                <a href="#">Términos del servicio</a>
+            </div>
+            <div>
+                <h3>Boletín</h3>
+                <form class="newsletter">
+                    <input type="email" placeholder="Tu email" aria-label="Correo">
+                    <button type="button">›</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 Comidasa. Todos los derechos reservados.</div>
+    </footer>
+    <script src="../Js/navegacion.js"></script>
+</body>
+</html>

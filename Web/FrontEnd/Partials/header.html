@@ -1,17 +1,12 @@
-<header class="header">
-    <div class="headContainer">
-        <div class="empresa">
-            <img src="../Assets/logo.png" alt="Logo de Comidasa" class="logo">
-            <div>
-                <h1>Comidasa</h1>
-                <p>Comida caliente y fresca, rápido en tu mesa</p>
-            </div>
-        </div>
-
-        <nav class="nav">
-            <button type="button" data-ruta="/catalogo">Catálogo</button>
-            <button type="button" data-ruta="/login">Ingresar</button>
-            <button type="button" data-ruta="/producto">Producto</button>
+<header class="topbar">
+    <div class="container nav-wrap">
+        <a href="./index.html" class="brand">Comidasa</a>
+        <nav class="nav-links" aria-label="Navegación principal">
+            <button type="button" data-ruta="/catalogo" class="active">Catálogo</button>
         </nav>
+        <div class="nav-actions">
+            <button class="icon-link" type="button" aria-label="Carrito"><span class="material-symbols-outlined">shopping_cart</span></button>
+            <button type="button" data-ruta="/login" class="btn btn-sm btn-primary">Iniciar sesión</button>
+        </div>
     </div>
 </header>

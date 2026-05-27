@@ -1,18 +1,129 @@
-<section class="productoPage">
-    <div class="btnRegreso">
-        <button type="button" data-ruta="/catalogo">Regresar</button>
-    </div>
-
-    <div class="platoContainer">
-        <aside class="imagenContainer"> <!--Para colocar la imagen de tamaño grande que se pueda ver bien alado del texto -->
-            <img src="../Assets/plato.png" alt="Imagen del plato">
-        </aside>
-
-        <div class="productoInfo"> <!-- Para colocar el texto con la información del plato alado de la imagen -->
-            <h2>Plato especial</h2> <!--Nombre del plato-->
-            <p>Comida caliente y fresca preparada al momento.</p> <!--Descripcion del plato-->
-            <p><strong>Precio:</strong> B/. 5.99</p> <!--Precio del plato-->
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto - Comidasa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Styles/main.css">
+</head>
+<body>
+    <header class="topbar compact">
+        <div class="container nav-wrap">
+            <a href="../index.html" class="brand">Comidasa</a>
+            <nav class="nav-links" aria-label="Navegación principal">
+                <a href="./catalogo.html">Catálogo</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="icon-link" type="button" aria-label="Carrito"><span class="material-symbols-outlined">shopping_cart</span></button>
+                <a href="./login.html" class="btn btn-sm btn-primary">Iniciar sesión</a>
+            </div>
         </div>
-    </div>
-</section>
+    </header>
+
+    <main>
+        <section class="container product-detail">
+            <button type="button" class="back-link registroBack" data-ruta="/catalogo"><span class="material-symbols-outlined">arrow_back</span> Regresar al catálogo</button>
+
+            <div class="product-grid">
+                <div class="product-hero-img">
+                    <img src="../Assets/plato.png" alt="Plato especial">
+                    <div class="hero-tags">
+                        <span>Fresco</span>
+                        <span>Especial</span>
+                    </div>
+                </div>
+
+                <aside class="product-panel">
+                    <h1>Plato especial</h1>
+                    <div class="rating">
+                        <span class="material-symbols-outlined filled">star</span>
+                        <span class="material-symbols-outlined filled">star</span>
+                        <span class="material-symbols-outlined filled">star</span>
+                        <span class="material-symbols-outlined filled">star</span>
+                        <span class="material-symbols-outlined">star_half</span>
+                        <strong>(4.8 / 120 reseñas)</strong>
+                    </div>
+
+                    <div class="price-box">
+                        <div class="price-row">
+                            <span>Precio por porción</span>
+                            <strong>B/. 5.99</strong>
+                        </div>
+                        <p>Comida fresca preparada al momento con ingredientes seleccionados. Una opción ideal para disfrutar un plato completo con buen sabor.</p>
+                    </div>
+
+                    <div class="buy-row">
+                        <div class="quantity">
+                            <button type="button">−</button>
+                            <span>1</span>
+                            <button type="button">+</button>
+                        </div>
+                        <button class="btn btn-primary btn-cart" type="button"><span class="material-symbols-outlined">shopping_cart</span> Agregar al carrito</button>
+                    </div>
+
+                    <button class="btn btn-outline btn-full" type="button"><span class="material-symbols-outlined">favorite</span> Agregar a favoritos</button>
+
+                    <div class="feature-grid">
+                        <div><span class="material-symbols-outlined">timer</span><small>Preparación</small><strong>15-20 min</strong></div>
+                        <div><span class="material-symbols-outlined">eco</span><small>Tipo</small><strong>Comida fresca</strong></div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="pairs-section">
+            <div class="container">
+                <h2>También puede gustarte</h2>
+                <div class="pairs-grid">
+                    <article class="pair-card">
+                        <img src="../Assets/plato.png" alt="Almuerzo completo">
+                        <div><h3>Almuerzo completo</h3><span>B/. 6.99</span></div>
+                    </article>
+                    <article class="pair-card">
+                        <img src="../Assets/plato.png" alt="Plato especial">
+                        <div><h3>Plato especial</h3><span>B/. 5.99</span></div>
+                    </article>
+                    <article class="delivery-card">
+                        <span class="material-symbols-outlined">local_shipping</span>
+                        <h3>Entrega rápida</h3>
+                        <p>Ordena tu plato favorito y recíbelo fresco en poco tiempo.</p>
+                        <a href="./catalogo.html">Ver catálogo</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" id="footer">
+        <div class="container footer-grid">
+            <div>
+                <h2>Comidasa</h2>
+                <p>Sabor artesanal entregado en la puerta de tu casa. Calidad sin compromisos.</p>
+            </div>
+            <div>
+                <h3>Empresa</h3>
+                <a href="#">Sobre nosotros</a>
+                <a href="#">Sucursales</a>
+            </div>
+            <div>
+                <h3>Soporte</h3>
+                <a href="#">Contacto</a>
+                <a href="#">Términos del servicio</a>
+            </div>
+            <div>
+                <h3>Boletín</h3>
+                <form class="newsletter">
+                    <input type="email" placeholder="Tu email" aria-label="Correo">
+                    <button type="button">›</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 Comidasa. Todos los derechos reservados.</div>
+    </footer>
+    <script src="../Js/navegacion.js"></script>
+</body>
+</html>

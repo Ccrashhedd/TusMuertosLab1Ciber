@@ -1,32 +1,94 @@
-<section>
-    <div>
-        <button type="button" data-ruta="/catalogo">Regresar</button>
-
-        <aside>
-            <img src="../Assets/registro.png" alt="Imagen de registro">
-            <h4>Bienvenido a esta aventura gastronomica</h4>
-            <p>Crea tu usuario para mantener tu historial y gustos entre nuestras sucursales</p>
-        </aside>
-            
-        <div>
-            <form id="registroForm">
-                <label for="nickname">Nickname:</label>
-                <input type="text" id="nickname" name="nickname" required>
-
-                <label for="correo">Correo:</label>
-                <input type="email" id="correo" name="correo" required>
-
-                <label for="contrasen">Contraseña:</label>
-                <input type="password" id="contrasen" name="contrasen" required>
-                <button type="button" id="toggleContrasen">Mostrar Contraseña</button>
-
-                <label for="confirmarContrasen">Confirmar Contraseña:</label>
-                <input type="password" id="confirmarContrasen" name="confirmarContrasen" required>
-                <button type="button" id="toggleConfirmarContrasen">Mostrar Contraseña</button>
-
-                <button type="submit">Registrarse</button>
-
-            </form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Comidasa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Styles/main.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container nav-wrap">
+            <a href="../index.html" class="brand">Comidasa</a>
+            <nav class="nav-links" aria-label="Navegación principal">
+                <a href="./catalogo.html" >Catálogo</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="icon-link" type="button" aria-label="Carrito"><span class="material-symbols-outlined">shopping_cart</span></button>
+                <a href="./login.html" class="btn btn-sm btn-primary">Iniciar sesión</a>
+            </div>
         </div>
-    </div>
-</section>
+    </header>
+
+    <main>
+        <section class="registroPage">
+            <div class="container registroShell">
+                <button class="back-link registroBack" type="button" data-ruta="/catalogo">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Regresar
+                </button>
+
+                <div class="registroGrid">
+                    <aside class="registroAside">
+                        <img src="../Assets/registro.png" alt="Imagen de registro">
+                        <h4>Bienvenido a esta aventura gastronomica</h4>
+                        <p>Crea tu usuario para mantener tu historial y gustos entre nuestras sucursales</p>
+                    </aside>
+                        
+                    <div class="registroCard">
+                        <form id="registroForm">
+                            <label for="nickname">Nickname:</label>
+                            <input type="text" id="nickname" name="nickname" required>
+
+                            <label for="correo">Correo:</label>
+                            <input type="email" id="correo" name="correo" required>
+
+                            <label for="contrasen">Contraseña:</label>
+                            <input type="password" id="contrasen" name="contrasen" required>
+                            <button type="button" id="toggleContrasen">Mostrar Contraseña</button>
+
+                            <label for="confirmarContrasen">Confirmar Contraseña:</label>
+                            <input type="password" id="confirmarContrasen" name="confirmarContrasen" required>
+                            <button type="button" id="toggleConfirmarContrasen">Mostrar Contraseña</button>
+
+                            <button type="submit">Registrarse</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer" id="footer">
+        <div class="container footer-grid">
+            <div>
+                <h2>Comidasa</h2>
+                <p>Sabor artesanal entregado en la puerta de tu casa. Calidad sin compromisos.</p>
+            </div>
+            <div>
+                <h3>Empresa</h3>
+                <a href="#">Sobre nosotros</a>
+                <a href="#">Sucursales</a>
+            </div>
+            <div>
+                <h3>Soporte</h3>
+                <a href="#">Contacto</a>
+                <a href="#">Términos del servicio</a>
+            </div>
+            <div>
+                <h3>Boletín</h3>
+                <form class="newsletter">
+                    <input type="email" placeholder="Tu email" aria-label="Correo">
+                    <button type="button">›</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 Comidasa. Todos los derechos reservados.</div>
+    </footer>
+    <script src="../Js/navegacion.js"></script>
+</body>
+</html>

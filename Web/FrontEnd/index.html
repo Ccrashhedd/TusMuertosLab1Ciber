@@ -3,22 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comidasa</title>
-
-    <link rel="stylesheet" href="../Styles/main.css">  
+    <title>Catálogo - Comidasa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./Styles/main.css">
 </head>
 <body>
-
-    <div id="header"></div>
-
-    <main class="main">
-        <div class="mainCont" id="app">
-            <!-- Aquí se cargará catalogo.html por defecto -->
+    <header class="topbar">
+        <div class="container nav-wrap">
+            <a href="./index.html" class="brand">Comidasa</a>
+            <nav class="nav-links" aria-label="Navegación principal">
+                <a href="./index.html" class="active">Catálogo</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="icon-link" type="button" aria-label="Carrito"><span class="material-symbols-outlined">shopping_cart</span></button>
+                <a href="./Views/login.html" class="btn btn-sm btn-primary">Iniciar sesión</a>
+            </div>
         </div>
+    </header>
+
+    <main>
+        <section class="catalogoPage container">
+            <h2>Catálogo de productos</h2>
+
+            <div class="busquedaCatalogo">
+                <label for="searchInput">Buscar producto:</label>
+                <input type="text" id="searchInput" placeholder="Ingrese el nombre del producto">
+                <button type="button" id="searchButton">Buscar</button>
+            </div>
+
+            <div class="productosGrid">
+                <article class="productoCard">
+                    <img src="./Assets/plato.png" alt="Plato de comida">
+                    <h3>Plato especial</h3>
+                    <p>Comida fresca preparada al momento.</p>
+                    <button type="button" data-ruta="/producto">Ver producto</button>
+                </article>
+
+                <article class="productoCard">
+                    <img src="./Assets/plato.png" alt="Plato de comida">
+                    <h3>Almuerzo completo</h3>
+                    <p>Incluye plato fuerte, acompañamiento y bebida.</p>
+                    <button type="button" data-ruta="/producto">Ver producto</button>
+                </article>
+            </div>
+        </section>
     </main>
 
-    <div id="footer"></div>
-
-    <script src="./Js/controller.js" defer></script>
+    <footer class="footer" id="footer">
+        <div class="container footer-grid">
+            <div>
+                <h2>Comidasa</h2>
+                <p>Sabor artesanal entregado en la puerta de tu casa. Calidad sin compromisos.</p>
+            </div>
+            <div>
+                <h3>Empresa</h3>
+                <a href="#">Sobre nosotros</a>
+                <a href="#">Sucursales</a>
+            </div>
+            <div>
+                <h3>Soporte</h3>
+                <a href="#">Contacto</a>
+                <a href="#">Términos del servicio</a>
+            </div>
+            <div>
+                <h3>Boletín</h3>
+                <form class="newsletter">
+                    <input type="email" placeholder="Tu email" aria-label="Correo">
+                    <button type="button">›</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 Comidasa. Todos los derechos reservados.</div>
+    </footer>
+    <script src="./Js/navegacion.js"></script>
 </body>
 </html>
