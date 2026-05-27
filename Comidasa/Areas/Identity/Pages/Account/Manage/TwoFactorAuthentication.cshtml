@@ -50,23 +50,18 @@
         </div>
     }
 
-    <h4 class="font-title-lg text-on-surface mt-8 mb-4">Aplicación de Autenticación</h4>
-    @if (!Model.HasAuthenticator)
+    <h4 class="font-title-lg text-on-surface mt-8 mb-4">Autenticación por Correo Electrónico</h4>
+    @if (!Model.Is2faEnabled)
     {
-        <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="bg-primary text-on-primary py-3 px-6 rounded-lg shadow-md hover:shadow-primary/20 hover:opacity-90 transition-all inline-block">
-            Configurar aplicación de autenticación
-        </a>
+        <form method="post" asp-page-handler="Enable2fa" class="inline-block">
+            <button type="submit" class="bg-primary text-on-primary py-3 px-6 rounded-lg shadow-md hover:shadow-primary/20 hover:opacity-90 transition-all">
+                Activar Autenticación por Correo
+            </button>
+        </form>
     }
     else
     {
-        <div class="flex gap-4 flex-wrap">
-            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="bg-primary text-on-primary py-2 px-4 rounded-lg shadow-md hover:opacity-90 transition-all">
-                Configurar aplicación de autenticación
-            </a>
-            <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="bg-surface-variant text-on-surface py-2 px-4 rounded-lg hover:bg-surface-dim transition-all">
-                Resetear aplicación de autenticación
-            </a>
-        </div>
+        <p class="mb-4">La autenticación de dos factores está activada. Se enviará un código a su correo electrónico al iniciar sesión.</p>
     }
 </div>
 

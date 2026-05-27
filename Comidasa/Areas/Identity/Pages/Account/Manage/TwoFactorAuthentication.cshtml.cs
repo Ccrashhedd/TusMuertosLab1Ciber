@@ -85,5 +85,19 @@ namespace Comidasa.Areas.Identity.Pages.Account.Manage
             StatusMessage = "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.";
             return RedirectToPage();
         }
+
+        public async Task<IActionResult> OnPostEnable2faAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(user, true);
+            await _signInManager.RefreshSignInAsync(user);
+            StatusMessage = "La autenticación de dos factores por correo ha sido activada.";
+            return RedirectToPage();
+        }
     }
 }

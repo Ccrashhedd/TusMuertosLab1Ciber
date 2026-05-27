@@ -1,0 +1,74 @@
+@page
+@model LoginWith2faModel
+@{
+    ViewData["Title"] = "Autenticación de dos factores";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg border border-gray-100">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                @ViewData["Title"]
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Hemos enviado un código de seguridad a su correo electrónico.
+            </p>
+        </div>
+        <form class="mt-8 space-y-6" method="post">
+            <input asp-for="RememberMe" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm font-medium" role="alert"></div>
+
+            <div>
+                <label asp-for="Input.TwoFactorCode" class="block text-sm font-medium text-gray-700">Código de seguridad</label>
+                <div class="mt-1">
+                    <input asp-for="Input.TwoFactorCode" class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" autocomplete="off" />
+                </div>
+                <span asp-validation-for="Input.TwoFactorCode" class="text-red-500 text-xs mt-1"></span>
+            </div>
+
+            <div class="flex items-center">
+                <input asp-for="Input.RememberMachine" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                <label asp-for="Input.RememberMachine" class="ml-2 block text-sm text-gray-900">
+                    @Html.DisplayNameFor(m => m.Input.RememberMachine)
+                </label>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button id="submitBtn" type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Verificar
+                </button>
+                <button id="resendBtn" type="submit" asp-page-handler="Resend" class="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Reenviar Código (<span id="timer">30</span>s)
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var timeLeft = 30;
+            var timerElement = document.getElementById('timer');
+            var resendBtn = document.getElementById('resendBtn');
+            var submitBtn = document.getElementById('submitBtn');
+            var timerText = resendBtn.innerHTML;
+
+            var countdown = setInterval(function () {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = "Reenviar Código";
+                    
+                    // Opcionalmente deshabilitar el botón de enviar principal para forzar reenvío
+                    // submitBtn.disabled = true;
+                    // submitBtn.innerHTML = "Código expirado (reenviar)";
+                } else {
+                    timerElement.textContent = timeLeft;
+                }
+            }, 1000);
+        });
+    </script>
+}

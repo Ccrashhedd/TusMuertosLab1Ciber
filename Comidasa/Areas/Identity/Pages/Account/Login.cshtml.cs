@@ -14,18 +14,29 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Comidasa.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IEmailSender _emailSender;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IMemoryCache _cache;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, 
+            UserManager<IdentityUser> userManager,
+            IEmailSender emailSender,
+            ILogger<LoginModel> logger,
+            IMemoryCache cache)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
+            _emailSender = emailSender;
             _logger = logger;
+            _cache = cache;
         }
 
         /// <summary>
@@ -119,6 +130,19 @@ namespace Comidasa.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
+                    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+                    if (user != null)
+                    {
+                        var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                        
+                        // Guardar el tiempo de expiración (30 segundos)
+                        _cache.Set($"2FA_Time_{user.Id}", DateTime.UtcNow, TimeSpan.FromSeconds(30));
+
+                        await _emailSender.SendEmailAsync(
+                            user.Email,
+                            "Código de Autenticación de Dos Factores",
+                            $"Su código de seguridad es: <b>{code}</b>. Introdúzcalo en la aplicación para iniciar sesión.");
+                    }
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
                 if (result.IsLockedOut)
