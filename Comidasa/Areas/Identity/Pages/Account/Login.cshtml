@@ -4,73 +4,58 @@
     ViewData["Title"] = "Iniciar Sesión";
 }
 
-<div class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-12">
-    <div class="w-full max-w-[480px] animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <!-- Login Card -->
-        <div class="bg-surface-container-lowest rounded-[1.5rem] shadow-[0_8px_30px_rgb(211,96,61,0.08)] p-8 md:p-12 border border-surface-variant/30">
-            <div class="text-center mb-10">
-                <h1 class="font-headline-md text-headline-md text-on-surface mb-2">Bienvenido de nuevo</h1>
-                <p class="font-body-md text-body-md text-on-surface-variant">Ingresa tus credenciales para continuar con tu experiencia artesanal</p>
-            </div>
-            
-            <form id="account" method="post" class="space-y-6">
-                <div asp-validation-summary="ModelOnly" class="text-error" role="alert"></div>
-                
-                <!-- Email Field -->
-                <div class="space-y-2">
-                    <label asp-for="Input.Email" class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Correo Electrónico</label>
-                    <div class="relative group">
-                        <input asp-for="Input.Email" class="w-full bg-surface-container-low border-0 border-b-2 border-surface-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 font-body-md text-body-md transition-all duration-300" placeholder="ejemplo@correo.com" autocomplete="username" aria-required="true" />
-                    </div>
-                    <span asp-validation-for="Input.Email" class="text-error text-sm mt-1"></span>
-                </div>
-                
-                <!-- Password Field -->
-                <div class="space-y-2">
-                    <label asp-for="Input.Password" class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Contraseña</label>
-                    <div class="relative group">
-                        <input asp-for="Input.Password" id="password" class="w-full bg-surface-container-low border-0 border-b-2 border-surface-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 font-body-md text-body-md transition-all duration-300" placeholder="••••••••" autocomplete="current-password" aria-required="true" />
-                        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" type="button" onclick="togglePassword('password')">
-                            <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
-                        </button>
-                    </div>
-                    <span asp-validation-for="Input.Password" class="text-error text-sm mt-1"></span>
-                </div>
-                
-                <!-- Remember & Forgot -->
-                <div class="flex items-center justify-between py-2">
-                    <label class="flex items-center gap-3 cursor-pointer group">
-                        <div class="relative flex items-center">
-                            <input asp-for="Input.RememberMe" class="peer h-5 w-5 rounded border-outline-variant text-primary focus:ring-primary/20 transition-all" />
-                        </div>
-                        <span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Recordarme</span>
-                    </label>
-                    <a asp-page="./ForgotPassword" class="font-label-sm text-label-sm text-primary hover:underline transition-all">¿Olvidaste tu contraseña?</a>
-                </div>
-                
-                <!-- Submit Button -->
-                <button id="login-submit" type="submit" class="w-full bg-primary text-on-primary py-4 rounded-lg font-title-lg text-title-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-300">
-                    Ingresar
-                </button>
-            </form>
-            
-            <!-- Register Link -->
-            <div class="mt-10 text-center">
-                <p class="font-body-md text-body-md text-on-surface-variant">
-                    ¿No tienes una cuenta? 
-                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-secondary font-bold hover:underline ml-1">Regístrate aquí</a>
-                </p>
-            </div>
+<main class="login-main">
+    <section class="container login-grid">
+        <div class="login-copy">
+            <h1>Comida caliente<br><span>y fresca en tu puerta.</span></h1>
+            <p>Descubre una experiencia culinaria con productos frescos, atención rápida y pedidos fáciles de realizar.</p>
+            <img src="~/Assets/plato.png" alt="Plato de comida">
         </div>
-    </div>
-</div>
+
+        <div class="login-card">
+            <div class="login-icon"><span class="material-symbols-outlined">account_circle</span></div>
+            <h2>Bienvenido de nuevo</h2>
+            <p>Ingresa tus credenciales para continuar</p>
+
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-error" role="alert"></div>
+
+                <label asp-for="Input.Email">Correo Electrónico</label>
+                <div class="input-box">
+                    <span class="material-symbols-outlined">person</span>
+                    <input asp-for="Input.Email" type="text" placeholder="ej. correo@gmail.com" required autocomplete="username" aria-required="true">
+                </div>
+                <span asp-validation-for="Input.Email" class="text-error" style="color:red; font-size:12px;"></span>
+
+                <label asp-for="Input.Password">Contraseña</label>
+                <div class="input-box">
+                    <span class="material-symbols-outlined">lock</span>
+                    <input asp-for="Input.Password" id="password" type="password" placeholder="••••••••" required autocomplete="current-password" aria-required="true">
+                    <span class="material-symbols-outlined eye" style="cursor:pointer;" onclick="togglePassword('password')">visibility</span>
+                </div>
+                <span asp-validation-for="Input.Password" class="text-error" style="color:red; font-size:12px;"></span>
+
+                <div class="form-options">
+                    <label class="check">
+                        <input asp-for="Input.RememberMe" type="checkbox"> Recordarme
+                    </label>
+                    <a asp-page="./ForgotPassword">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button class="btn btn-primary btn-full" type="submit">Ingresar</button>
+            </form>
+
+            <div class="register-line">¿No tienes una cuenta? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Regístrate gratis</a></div>
+        </div>
+    </section>
+</main>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         function togglePassword(fieldId) {
             const input = document.getElementById(fieldId);
-            const icon = document.getElementById(fieldId + "Icon");
+            const icon = document.querySelector('.eye');
             
             if (input && icon) {
                 const isPassword = input.type === 'password';

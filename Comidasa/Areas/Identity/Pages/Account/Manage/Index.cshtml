@@ -5,27 +5,159 @@
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
-<h3 class="font-title-lg text-title-lg text-on-surface mb-6">@ViewData["Title"]</h3>
+<h3 style="margin: 0 0 20px; font-size: 24px;">@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 
-<form id="profile-form" method="post" class="space-y-5 max-w-md">
-    <div asp-validation-summary="ModelOnly" class="text-error" role="alert"></div>
+<form id="profile-form" method="post" style="max-width: 450px;">
+    <div asp-validation-summary="ModelOnly" class="text-error" role="alert" style="color:red; font-size:12px; margin-bottom:15px;"></div>
     
-    <div class="space-y-1.5">
-        <label asp-for="Username" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Nombre de Usuario</label>
-        <input asp-for="Username" class="w-full bg-surface-container-low border-0 border-b-2 border-surface-variant rounded-t-lg py-3 px-4 text-on-surface-variant opacity-70 cursor-not-allowed" disabled />
+    <label asp-for="Username">Nombre de Usuario</label>
+    <div class="input-box" style="margin-bottom: 15px;">
+        <input asp-for="Username" type="text" disabled style="background: var(--surface-2); opacity: 0.7;" />
     </div>
 
-    <div class="space-y-1.5">
-        <label asp-for="Input.PhoneNumber" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Teléfono</label>
-        <input asp-for="Input.PhoneNumber" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all" placeholder="Ingresa tu teléfono" />
-        <span asp-validation-for="Input.PhoneNumber" class="text-error text-sm mt-1"></span>
+    <label asp-for="Input.PhoneNumber">Teléfono</label>
+    <div class="input-box" style="margin-bottom: 5px;">
+        <input asp-for="Input.PhoneNumber" type="text" placeholder="Ingresa tu teléfono" />
     </div>
+    <span asp-validation-for="Input.PhoneNumber" class="text-error" style="color:red; font-size:12px; display:block; margin-bottom:20px;"></span>
 
-    <button id="update-profile-button" type="submit" class="bg-primary text-on-primary font-title-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all mt-4">
+    <button id="update-profile-button" type="submit" class="btn btn-primary">
         Guardar Cambios
     </button>
 </form>
+
+<!-- Sección de Mis Reseñas -->
+<div style="margin-top: 3rem; border-top: 1px solid rgba(229, 190, 179, 0.4); padding-top: 2.5rem; max-width: 800px;">
+    <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; color: #a8320e; margin: 0 0 1.5rem 0;">Mis Reseñas Escritas</h3>
+
+    @if (Model.UserReviews == null || !Model.UserReviews.Any())
+    {
+        <p style="color: #666; font-style: italic;">Aún no has escrito ninguna reseña. ¡Tus opiniones sobre nuestros platos aparecerán aquí!</p>
+    }
+    else
+    {
+        <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+            @foreach (var review in Model.UserReviews)
+            {
+                <div class="review-profile-card" id="review-card-@review.Id" style="background: white; border: 1px solid rgba(229, 190, 179, 0.3); border-radius: 12px; padding: 1.2rem; box-shadow: 0 3px 10px rgba(0,0,0,0.01);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <div>
+                            <strong style="color: #a8320e; font-size: 15px;">@review.Product?.NameProduct</strong>
+                            <span style="font-size: 11px; color: #999; margin-left: 10px;">@review.CreatedAt.ToString("dd MMM yyyy, HH:mm")</span>
+                            @if (!string.IsNullOrEmpty(review.Documento))
+                            {
+                                <span style="font-size: 11px; background: #f5f5f5; color: #666; padding: 1px 6px; border-radius: 4px; margin-left: 8px;">Doc: @review.Documento</span>
+                            }
+                        </div>
+                        <div style="display: flex; gap: 1px;">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="material-symbols-outlined" style="font-size: 14px; color: @(i <= review.Rating ? "#a87b1e" : "#ccc");">star</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Review Display -->
+                    <div id="review-display-@review.Id">
+                        <p style="color: #555; font-size: 13px; margin: 0 0 10px 0; line-height: 1.4;">@review.Comment</p>
+                        
+                        @if (!string.IsNullOrEmpty(review.DocumentPath))
+                        {
+                            <div style="margin-bottom: 10px;">
+                                <a href="@review.DocumentPath" target="_blank" class="btn btn-sm btn-outline" style="height: 26px; font-size: 10px; padding: 0 10px; display: inline-flex; gap: 3px; border-color: #ddd;">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">description</span>
+                                    Ver Documento Adjunto
+                                </a>
+                            </div>
+                        }
+
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" onclick="showEditForm(@review.Id)" class="btn btn-sm btn-outline" style="height: 26px; padding-inline: 10px; font-size: 10px; color: #555; border-color: #ccc;">
+                                Editar
+                            </button>
+                            <form asp-controller="Reviews" asp-action="Delete" asp-route-id="@review.Id" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta reseña?');">
+                                <button type="submit" class="btn btn-sm btn-outline" style="height: 26px; padding-inline: 10px; font-size: 10px; color: #c0392b; border-color: #e74c3c; background: #fdf2f2;">
+                                    Eliminar
+                                </button>
+                            </form>
+                            <a href="/Home/Details/@review.ProductId" class="btn btn-sm btn-outline" style="height: 26px; padding-inline: 10px; font-size: 10px; color: var(--muted); border-color: #ddd;">
+                                Ir al Plato
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Review Edit Form (Hidden by default) -->
+                    <div id="review-edit-@review.Id" style="display: none; margin-top: 10px; border-top: 1px dashed rgba(229, 190, 179, 0.4); padding-top: 10px;">
+                        <form asp-controller="Reviews" asp-action="Edit" asp-route-id="@review.Id" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="id" value="@review.Id" />
+                            
+                            <div style="margin-bottom: 10px;">
+                                <label style="display:block; font-size: 11px; font-weight:700; margin-bottom:3px;">Calificación:</label>
+                                <select name="rating" class="input-select" style="padding: 4px; border-radius: 5px; border: 1px solid #ddd; outline:none; background:white; font-size:12px;">
+                                    <option value="5" selected="@(review.Rating == 5)">5 Estrellas</option>
+                                    <option value="4" selected="@(review.Rating == 4)">4 Estrellas</option>
+                                    <option value="3" selected="@(review.Rating == 3)">3 Estrellas</option>
+                                    <option value="2" selected="@(review.Rating == 2)">2 Estrellas</option>
+                                    <option value="1" selected="@(review.Rating == 1)">1 Estrella</option>
+                                </select>
+                            </div>
+
+                            <div style="margin-bottom: 10px;">
+                                <label style="display:block; font-size: 11px; font-weight:700; margin-bottom:3px;">Documento/Identificación (DNI/Cédula):</label>
+                                <input type="text" name="documento" value="@review.Documento" class="input-text" style="width:100%; max-width: 250px; padding: 6px; border-radius: 5px; border: 1px solid #ddd; font-size:12px;" />
+                            </div>
+
+                            <div style="margin-bottom: 10px;">
+                                <label style="display:block; font-size: 11px; font-weight:700; margin-bottom:3px;">Adjuntar nuevo documento (PDF, imagen, etc. - opcional):</label>
+                                <input type="file" name="documentFile" style="font-size: 11px;" />
+                                @if (!string.IsNullOrEmpty(review.DocumentPath))
+                                {
+                                    <div id="file-indicator-@review.Id" style="font-size:10px; color:#666; margin-top:3px; display:flex; align-items:center; gap:6px;">
+                                        <span>Archivo actual cargado.</span>
+                                        <label style="cursor:pointer; color:#c0392b; font-weight:700;">
+                                            <input type="checkbox" name="keepCurrentFile" value="false" onchange="toggleRemoveFile(@review.Id, this)" /> Eliminar archivo actual
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <div style="margin-bottom: 10px;">
+                                <label style="display:block; font-size: 11px; font-weight:700; margin-bottom:3px;">Comentario:</label>
+                                <textarea name="comment" required style="width:100%; min-height: 60px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-family:inherit; font-size:12px;">@review.Comment</textarea>
+                            </div>
+
+                            <div style="display:flex; gap:8px;">
+                                <button type="submit" class="btn btn-sm btn-primary" style="min-height:30px; font-size:11px;">Guardar</button>
+                                <button type="button" onclick="hideEditForm(@review.Id)" class="btn btn-sm btn-outline" style="border-color:#ccc; color:#555; min-height:30px; font-size:11px;">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script>
+    function showEditForm(id) {
+        $('#review-display-' + id).hide();
+        $('#review-edit-' + id).show();
+    }
+
+    function hideEditForm(id) {
+        $('#review-edit-' + id).hide();
+        $('#review-display-' + id).show();
+    }
+
+    function toggleRemoveFile(id, checkbox) {
+        if (checkbox.checked) {
+            $('#file-indicator-' + id).css('text-decoration', 'line-through');
+        } else {
+            $('#file-indicator-' + id).css('text-decoration', 'none');
+        }
+    }
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

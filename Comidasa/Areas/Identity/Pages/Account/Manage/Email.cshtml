@@ -5,38 +5,38 @@
     ViewData["ActivePage"] = ManageNavPages.Email;
 }
 
-<h3 class="font-title-lg text-title-lg text-on-surface mb-6">@ViewData["Title"]</h3>
+<h3 style="margin: 0 0 20px; font-size: 24px;">@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 
-<form id="email-form" method="post" class="space-y-5 max-w-md">
-    <div asp-validation-summary="All" class="text-error" role="alert"></div>
+<form id="email-form" method="post" style="max-width: 450px;">
+    <div asp-validation-summary="All" class="text-error" role="alert" style="color:red; font-size:12px; margin-bottom:15px;"></div>
     
     @if (Model.IsEmailConfirmed)
     {
-        <div class="space-y-1.5 relative">
-            <label asp-for="Email" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Correo Actual</label>
-            <input asp-for="Email" class="w-full bg-surface-container-low border-0 border-b-2 border-surface-variant rounded-t-lg py-3 px-4 text-on-surface-variant opacity-70 cursor-not-allowed pr-12" disabled />
-            <span class="material-symbols-outlined text-secondary absolute right-3 top-9">check_circle</span>
+        <label asp-for="Email">Correo Actual</label>
+        <div class="input-box" style="margin-bottom: 15px;">
+            <input asp-for="Email" type="text" disabled style="background: var(--surface-2); opacity: 0.7;" />
+            <span class="material-symbols-outlined eye" style="color:var(--secondary); font-variation-settings: 'FILL' 1;">check_circle</span>
         </div>
     }
     else
     {
-        <div class="space-y-1.5">
-            <label asp-for="Email" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Correo Actual</label>
-            <input asp-for="Email" class="w-full bg-surface-container-low border-0 border-b-2 border-surface-variant rounded-t-lg py-3 px-4 text-on-surface-variant opacity-70 cursor-not-allowed" disabled />
-            <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="text-sm text-primary hover:underline mt-2">
-                Enviar correo de verificación
-            </button>
+        <label asp-for="Email">Correo Actual</label>
+        <div class="input-box" style="margin-bottom: 5px;">
+            <input asp-for="Email" type="text" disabled style="background: var(--surface-2); opacity: 0.7;" />
         </div>
+        <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-sm btn-outline" style="margin-bottom: 15px;">
+            Enviar correo de verificación
+        </button>
     }
 
-    <div class="space-y-1.5">
-        <label asp-for="Input.NewEmail" class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Nuevo Correo</label>
-        <input asp-for="Input.NewEmail" class="w-full bg-surface-container-lowest border-outline-variant focus:border-primary focus:ring-primary/20 rounded-lg py-3 px-4 transition-all" autocomplete="email" aria-required="true" placeholder="Por favor ingresa tu nuevo correo." />
-        <span asp-validation-for="Input.NewEmail" class="text-error text-sm mt-1"></span>
+    <label asp-for="Input.NewEmail">Nuevo Correo</label>
+    <div class="input-box" style="margin-bottom: 5px;">
+        <input asp-for="Input.NewEmail" type="email" placeholder="Ingresa tu nuevo correo." autocomplete="email" aria-required="true" />
     </div>
+    <span asp-validation-for="Input.NewEmail" class="text-error" style="color:red; font-size:12px; display:block; margin-bottom:20px;"></span>
 
-    <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="bg-primary text-on-primary font-title-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-primary/20 hover:opacity-90 transition-all mt-4">
+    <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-primary">
         Cambiar Correo
     </button>
 </form>

@@ -4,12 +4,13 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
-        <div class="flex items-center gap-4">
-            <a class="text-on-surface-variant hover:text-primary transition-opacity font-title-lg text-title-lg" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                <span class="material-symbols-outlined">person</span> @User.Identity?.Name
+    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" style="margin: 0; display: inline-block;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--muted); font-size: 14px;">
+                <span class="material-symbols-outlined">person</span>
+                <span class="user-email-text">@User.Identity?.Name</span>
             </a>
-            <button type="submit" class="bg-primary text-on-primary px-4 py-2 rounded-lg font-title-lg hover:opacity-80 transition-opacity">
+            <button type="submit" class="btn btn-sm btn-outline">
                 Salir
             </button>
         </div>
@@ -17,12 +18,5 @@
 }
 else
 {
-    <div class="flex items-center gap-4">
-        <a class="text-on-surface-variant hover:text-primary transition-opacity" asp-area="Identity" asp-page="/Account/Login">
-            <span class="material-symbols-outlined" style="font-size: 28px;">person</span>
-        </a>
-        <a class="bg-primary text-on-primary px-6 py-2 rounded-lg font-title-lg hover:opacity-80 transition-opacity hidden md:inline-block" asp-area="Identity" asp-page="/Account/Register">
-            Registrarse
-        </a>
-    </div>
+    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-sm btn-primary">Iniciar sesión</a>
 }

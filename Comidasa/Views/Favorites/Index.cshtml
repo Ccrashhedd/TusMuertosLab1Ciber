@@ -1,0 +1,73 @@
+@model IEnumerable<Comidasa.Models.Favorite>
+@{
+    ViewData["Title"] = "Mis Favoritos";
+}
+
+<section class="catalogoPage container">
+    <h2>Mis Platos Favoritos</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="delivery-card" style="margin-top: 40px;">
+            <span class="material-symbols-outlined">favorite_border</span>
+            <h3>Aún no tienes favoritos</h3>
+            <p>Explora nuestro catálogo y guarda los platos que más te gusten para tenerlos siempre a mano.</p>
+            <a href="@Url.Action("Index", "Home")">Volver al catálogo</a>
+        </div>
+    }
+    else
+    {
+        <div class="productosGrid">
+            @foreach (var item in Model)
+            {
+                <article class="productoCard" id="fav-@item.ProductId">
+                    <div style="position: relative;">
+                        @if (!string.IsNullOrEmpty(item.Product.ImagenProduct))
+                        {
+                            <img src="@item.Product.ImagenProduct" alt="@item.Product.NameProduct">
+                        }
+                        else
+                        {
+                            <img src="~/Assets/plato.png" alt="Plato de comida">
+                        }
+                        <button class="btn-favorite" data-id="@item.ProductId" style="position: absolute; top: 10px; right: 10px; background: white; border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; color: #a8320e; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: none;" title="Quitar de favoritos">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24">favorite</span>
+                        </button>
+                    </div>
+                    <h3>@item.Product.NameProduct</h3>
+                    <p>@item.Product.Descrip</p>
+                    <p><strong>$@item.Product.Price.ToString("0.00")</strong></p>
+                    <button type="button" onclick="location.href='@Url.Action("Details", "Home", new { id = item.ProductId })'">Ver producto</button>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-favorite').click(function () {
+                var btn = $(this);
+                var productId = btn.data('id');
+
+                $.post('/Favorites/ToggleFavorite', { productId: productId }, function (response) {
+                    if (response.success) {
+                        if (!response.isFavorite) {
+                            // Quitado de favoritos, removemos la tarjeta
+                            $('#fav-' + productId).fadeOut(300, function() {
+                                $(this).remove();
+                                // Si ya no hay tarjetas, podemos recargar para mostrar el mensaje de vacío
+                                if ($('.productoCard').length === 0) {
+                                    location.reload();
+                                }
+                            });
+                        }
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            });
+        });
+    </script>
+}

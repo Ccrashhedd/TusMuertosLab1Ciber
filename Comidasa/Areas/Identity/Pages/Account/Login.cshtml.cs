@@ -75,15 +75,15 @@ namespace Comidasa.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "El correo es obligatorio.")]
+            [EmailAddress(ErrorMessage = "El formato del correo es inválido.")]
             public string Email { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "La contraseña es obligatoria.")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -91,7 +91,7 @@ namespace Comidasa.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Recordarme")]
             public bool RememberMe { get; set; }
         }
 
@@ -122,7 +122,7 @@ namespace Comidasa.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -135,8 +135,7 @@ namespace Comidasa.Areas.Identity.Pages.Account
                     {
                         var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
                         
-                        // Guardar el tiempo de expiración (30 segundos)
-                        _cache.Set($"2FA_Time_{user.Id}", DateTime.UtcNow, TimeSpan.FromSeconds(30));
+                        // Ya no hay límite de tiempo corto manual.
 
                         await _emailSender.SendEmailAsync(
                             user.Email,
@@ -152,7 +151,27 @@ namespace Comidasa.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user != null)
+                    {
+                        var failedAttempts = await _userManager.GetAccessFailedCountAsync(user);
+                        var maxAttempts = _userManager.Options.Lockout.MaxFailedAccessAttempts;
+                        var remaining = maxAttempts - failedAttempts;
+                        
+                        if (remaining > 0)
+                        {
+                            ModelState.AddModelError(string.Empty, $"Intento de inicio de sesión no válido. Te quedan {remaining} intentos.");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Intento de inicio de sesión no válido.");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Intento de inicio de sesión no válido.");
+                    }
+                    
                     return Page();
                 }
             }

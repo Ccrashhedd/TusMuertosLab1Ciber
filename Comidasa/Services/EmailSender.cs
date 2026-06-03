@@ -44,39 +44,88 @@ namespace Comidasa.Services
             // Remove HTML tags for the plain text version
             string plainText = System.Text.RegularExpressions.Regex.Replace(htmlMessage, "<.*?>", string.Empty);
             
-            // Build a more complete HTML email structure
+            // Extract the 6-digit verification code using robust regex
+            string code = "";
+            var match = System.Text.RegularExpressions.Regex.Match(htmlMessage, @"<b>(\d+)</b>");
+            if (match.Success)
+            {
+                code = match.Groups[1].Value;
+            }
+            else
+            {
+                var matchBold = System.Text.RegularExpressions.Regex.Match(htmlMessage, @"<b>(.*?)</b>");
+                code = matchBold.Success ? matchBold.Groups[1].Value : htmlMessage;
+            }
+
+            // Clean the instruction message to show beneath the code
+            string cleanInstruction = htmlMessage;
+            if (match.Success)
+            {
+                cleanInstruction = htmlMessage
+                    .Replace($"<b>{code}</b>", "")
+                    .Replace("Su código de seguridad es: ", "")
+                    .Replace("Su nuevo código de seguridad es: ", "")
+                    .Trim();
+                
+                // Capitalize first letter
+                if (cleanInstruction.Length > 0)
+                {
+                    cleanInstruction = char.ToUpper(cleanInstruction[0]) + cleanInstruction.Substring(1);
+                }
+            }
+
+            // Determine context text to show in the description
+            string actionDescription = "validar tu cuenta";
+            if (htmlMessage.Contains("iniciar sesión"))
+            {
+                actionDescription = "iniciar sesión en tu cuenta";
+            }
+            else if (htmlMessage.Contains("verificar su cuenta") || htmlMessage.Contains("verificar tu cuenta"))
+            {
+                actionDescription = "verificar tu cuenta de correo";
+            }
+
+            string cleanInstructionHtml = !string.IsNullOrEmpty(cleanInstruction)
+                ? $"<p style='color: #4b5563; font-size: 14px; text-align: center; margin-bottom: 24px; line-height: 1.5; font-family: sans-serif;'>{cleanInstruction}</p>"
+                : "";
+
+            // Build a responsive HTML email structure using brand colors (#a8320e)
             string fullHtml = $@"
             <!DOCTYPE html>
             <html lang='es'>
             <head>
                 <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
                 <title>{subject}</title>
             </head>
-            <body style='font-family: ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; line-height: 1.6; padding: 40px 20px; margin: 0;'>
-                <div style='max-width: 550px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);'>
-                    <div style='background-color: #2563eb; padding: 30px; text-align: center;'>
-                        <h1 style='color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;'>Comidasa</h1>
+            <body style='font-family: ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; line-height: 1.6; padding: 20px; margin: 0;'>
+                <div style='max-width: 450px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);'>
+                    <div style='background-color: #a8320e; padding: 24px; text-align: center;'>
+                        <h1 style='color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; font-family: ""Plus Jakarta Sans"", sans-serif;'>Comidasa</h1>
                     </div>
-                    <div style='padding: 40px 30px;'>
-                        <h2 style='margin-top: 0; color: #111827; font-size: 20px; font-weight: 600;'>Código de Verificación</h2>
-                        <p style='color: #4b5563; font-size: 16px; margin-bottom: 30px;'>
-                            Hola, hemos recibido una solicitud para iniciar sesión en tu cuenta. Usa el siguiente código de seguridad:
+                    <div style='padding: 30px 24px;'>
+                        <h2 style='margin-top: 0; color: #111827; font-size: 18px; font-weight: 600; text-align: center;'>Código de Seguridad</h2>
+                        
+                        <p style='color: #4b5563; font-size: 15px; text-align: center; margin-bottom: 24px; margin-top: 10px;'>
+                            Hola, hemos recibido una solicitud para {actionDescription}. Usa el siguiente código de seguridad para continuar:
                         </p>
                         
-                        <div style='background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 30px;'>
-                            <div style='font-size: 36px; font-weight: 800; letter-spacing: 6px; color: #0f172a;'>
-                                {htmlMessage.Replace("Su código de seguridad es: <b>", "").Replace("</b>. Introdúzcalo en la aplicación para iniciar sesión.", "").Replace("Su nuevo código de seguridad es: <b>", "")}
+                        <div style='background-color: #fdf5f3; border: 1px dashed #d18d77; border-radius: 8px; padding: 18px 10px; text-align: center; margin-bottom: 24px;'>
+                            <div style='font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #a8320e; font-family: monospace; display: inline-block;'>
+                                {code}
                             </div>
                         </div>
 
-                        <p style='color: #64748b; font-size: 14px; margin-bottom: 0;'>
-                            Este código expirará en 30 segundos. Si no solicitaste este código, puedes ignorar este correo de forma segura.
+                        {cleanInstructionHtml}
+
+                        <p style='color: #94a3b8; font-size: 12px; text-align: center; margin-bottom: 0;'>
+                            Este código es temporal. Si no solicitaste este código, puedes ignorar este correo de forma segura.
                         </p>
                     </div>
-                    <div style='background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;'>
-                        <p style='margin: 0; font-size: 12px; color: #94a3b8;'>
+                    <div style='background-color: #f8fafc; padding: 16px 24px; text-align: center; border-top: 1px solid #e2e8f0;'>
+                        <p style='margin: 0; font-size: 11px; color: #94a3b8;'>
                             &copy; {DateTime.Now.Year} Comidasa. Todos los derechos reservados.<br>
-                            Este es un mensaje automático, por favor no responda.
+                            Este es un mensaje automático, por favor no lo responda.
                         </p>
                     </div>
                 </div>

@@ -5,26 +5,26 @@
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 }
 
-<h3 class="font-title-lg text-title-lg text-on-surface mb-6">@ViewData["Title"]</h3>
+<h3 style="margin: 0 0 20px; font-size: 24px;">@ViewData["Title"]</h3>
 
-<div class="max-w-xl">
-    <p class="text-on-surface-variant mb-6">
+<div style="max-width: 550px;">
+    <p style="color:var(--muted); line-height:1.6; margin-bottom:20px;">
         Su cuenta contiene datos personales que usted nos ha proporcionado. Esta página le permite descargar o eliminar esos datos.
     </p>
-    <div class="bg-error-container text-on-error-container p-4 rounded-lg mb-6 shadow-sm border border-error/20">
-        <p class="font-bold flex items-center gap-2">
-            <span class="material-symbols-outlined">warning</span>
-            Eliminar sus datos personales borrará permanentemente su cuenta, y no podrá ser recuperada.
+    <div style="background: rgba(211,47,47,0.1); color: #d32f2f; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(211,47,47,0.2);">
+        <p style="margin:0; font-weight: 800; display:flex; align-items:flex-start; gap:8px;">
+            <span class="material-symbols-outlined" style="margin-top:2px;">warning</span>
+            <span>Eliminar sus datos personales borrará permanentemente su cuenta, y no podrá ser recuperada.</span>
         </p>
     </div>
     
-    <div class="flex gap-4">
+    <div style="display:flex; gap:15px; flex-wrap:wrap;">
         <form id="download-data" asp-page="DownloadPersonalData" method="post">
-            <button class="bg-secondary text-on-secondary font-title-lg py-3 px-6 rounded-lg hover:opacity-90 transition-all" type="submit">
+            <button class="btn btn-primary" type="submit">
                 Descargar mis datos
             </button>
         </form>
-        <a id="delete" asp-page="DeletePersonalData" class="bg-error text-on-error font-title-lg py-3 px-6 rounded-lg hover:opacity-90 transition-all">
+        <a id="delete" asp-page="DeletePersonalData" class="btn btn-outline" style="color: #d32f2f; border-color: #d32f2f;">
             Eliminar Cuenta
         </a>
     </div>

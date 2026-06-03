@@ -1,0 +1,26 @@
+## Ignore Visual Studio / VS Code / build files
+obj/
+bin/
+publish/
+.vs/
+.vscode/
+
+## Ignore User secrets & local configurations
+appsettings.Development.json
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## Database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.local
+
+## OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

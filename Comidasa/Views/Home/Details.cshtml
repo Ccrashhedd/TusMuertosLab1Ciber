@@ -1,0 +1,371 @@
+@model Comidasa.Models.Product
+@inject Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> UserManager
+@{
+    ViewData["Title"] = Model.NameProduct;
+}
+
+<section class="container details-page">
+    <a asp-action="Index" class="back-link">
+        <span class="material-symbols-outlined">arrow_back</span>
+        REGRESAR AL CATÁLOGO
+    </a>
+
+    <div class="details-grid">
+        <!-- Izquierda: Imagen y decoraciones -->
+        <div class="details-image-area">
+            <div class="badges-top">
+                <span class="badge badge-green">FRESCO</span>
+                <span class="badge badge-orange">ESPECIAL</span>
+            </div>
+            
+            <div class="image-wrapper">
+                @if (!string.IsNullOrEmpty(Model.ImagenProduct))
+                {
+                    <img src="@Model.ImagenProduct" alt="@Model.NameProduct" class="main-img">
+                }
+                else
+                {
+                    <img src="~/Assets/plato.png" alt="@Model.NameProduct" class="main-img">
+                }
+            </div>
+
+            <div class="category-pill">
+                @Model.Category
+            </div>
+        </div>
+
+        <!-- Derecha: Información del producto -->
+        <div class="details-info-area">
+            <h1 class="details-title">@Model.NameProduct</h1>
+            
+            @{
+                var itemReviews = ViewBag.Reviews as List<Comidasa.Models.Review> ?? new List<Comidasa.Models.Review>();
+                double avgRating = itemReviews.Any() ? itemReviews.Average(r => r.Rating) : 5.0;
+                int fullStars = (int)avgRating;
+                bool hasHalfStar = (avgRating - fullStars) >= 0.5;
+            }
+            <div class="reviews">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    if (i <= fullStars)
+                    {
+                        <span class="material-symbols-outlined filled-star">star</span>
+                    }
+                    else if (i == fullStars + 1 && hasHalfStar)
+                    {
+                        <span class="material-symbols-outlined half-star">star_half</span>
+                    }
+                    else
+                    {
+                        <span class="material-symbols-outlined" style="color: #ccc; font-size: 1.2rem;">star</span>
+                    }
+                }
+                <span class="review-text">(@avgRating.ToString("0.0") / @itemReviews.Count @(itemReviews.Count == 1 ? "reseña" : "reseñas"))</span>
+            </div>
+
+            <div class="price-box">
+                <span class="price-label">Precio por porción</span>
+                <span class="price-value">B/. @Model.Price.ToString("0.00")</span>
+            </div>
+
+            <p class="details-description">
+                @Model.Descrip
+            </p>
+
+            <div class="action-row">
+                <div class="quantity-selector">
+                    <button type="button" aria-label="Reducir cantidad">-</button>
+                    <span class="quantity-value">1</span>
+                    <button type="button" aria-label="Aumentar cantidad">+</button>
+                </div>
+                
+                <button class="btn btn-primary add-to-cart-btn">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    AGREGAR AL CARRITO
+                </button>
+            </div>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button class="btn btn-outline favorites-btn btn-favorite" data-id="@Model.IdProduct">
+                    <span class="material-symbols-outlined">favorite</span>
+                    <span class="fav-text">Agregar a favoritos</span>
+                </button>
+            }
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <span class="material-symbols-outlined info-icon">timer</span>
+                    <div>
+                        <span class="info-label">PREPARACIÓN</span>
+                        <span class="info-val">15-20 min</span>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <span class="material-symbols-outlined info-icon">eco</span>
+                    <div>
+                        <span class="info-label">TIPO</span>
+                        <span class="info-val">Comida fresca</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Reseñas -->
+    <div class="reviews-section" style="margin-top: 3rem; border-top: 1px solid rgba(229, 190, 179, 0.4); padding-top: 2rem;">
+        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1.5rem;">Reseñas de este plato</h2>
+
+        @if (!itemReviews.Any())
+        {
+            <p style="color: #666; font-style: italic;">Aún no hay reseñas para este plato. ¡Sé el primero en dejar una!</p>
+        }
+        else
+        {
+            <div class="reviews-list" style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem;">
+                @foreach (var review in itemReviews)
+                {
+                    var isOwner = User.Identity.IsAuthenticated && review.UserId == UserManager.GetUserId(User);
+                    
+                    <div class="review-card" id="review-card-@review.Id" style="background: white; border: 1px solid rgba(229, 190, 179, 0.3); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 0.8rem;">
+                            <div>
+                                <strong style="color: #1a1a1a; font-size: 1rem;">@review.User?.UserName</strong>
+                                <span style="font-size: 0.8rem; color: #888; margin-left: 10px;">@review.CreatedAt.ToString("dd MMM yyyy, HH:mm")</span>
+                                @if (!string.IsNullOrEmpty(review.Documento))
+                                {
+                                    <span style="font-size: 0.75rem; background: #f0f0f0; color: #555; padding: 2px 8px; border-radius: 4px; margin-left: 10px;">DNI/ID: @review.Documento</span>
+                                }
+                            </div>
+                            <div style="display: flex; gap: 2px;">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem; color: @(i <= review.Rating ? "#a87b1e" : "#ccc");">star</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Review Display -->
+                        <div id="review-display-@review.Id">
+                            <p style="color: #555; margin: 0 0 0.8rem 0; line-height: 1.5; font-size: 0.95rem;">@review.Comment</p>
+
+                            @if (!string.IsNullOrEmpty(review.DocumentPath))
+                            {
+                                <div style="margin-bottom: 0.8rem;">
+                                    <a href="@review.DocumentPath" target="_blank" class="btn btn-sm btn-outline" style="height: 30px; font-size: 11px; padding: 0 12px; display: inline-flex; gap: 4px;">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">description</span>
+                                        Ver Documento Adjunto
+                                    </a>
+                                </div>
+                            }
+
+                            @if (isOwner)
+                            {
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="button" onclick="showEditForm(@review.Id)" class="btn btn-sm btn-outline" style="height: 28px; padding-inline: 12px; font-size: 11px; color: #555; border-color: #ccc;">
+                                        Editar
+                                    </button>
+                                    <form asp-controller="Reviews" asp-action="Delete" asp-route-id="@review.Id" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta reseña?');">
+                                        <button type="submit" class="btn btn-sm btn-outline" style="height: 28px; padding-inline: 12px; font-size: 11px; color: #c0392b; border-color: #e74c3c; background: #fdf2f2;">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Review Edit Form (Hidden by default) -->
+                        @if (isOwner)
+                        {
+                            <div id="review-edit-@review.Id" style="display: none; margin-top: 1rem; border-top: 1px dashed rgba(229, 190, 179, 0.4); padding-top: 1rem;">
+                                <form asp-controller="Reviews" asp-action="Edit" asp-route-id="@review.Id" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="id" value="@review.Id" />
+                                    
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="display:block; font-size: 12px; font-weight:700; margin-bottom:4px;">Calificación:</label>
+                                        <select name="rating" class="input-select" style="padding: 6px; border-radius: 6px; border: 1px solid #ddd; outline:none; background:white;">
+                                            <option value="5" selected="@(review.Rating == 5)">5 Estrellas</option>
+                                            <option value="4" selected="@(review.Rating == 4)">4 Estrellas</option>
+                                            <option value="3" selected="@(review.Rating == 3)">3 Estrellas</option>
+                                            <option value="2" selected="@(review.Rating == 2)">2 Estrellas</option>
+                                            <option value="1" selected="@(review.Rating == 1)">1 Estrella</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="display:block; font-size: 12px; font-weight:700; margin-bottom:4px;">Documento/Identificación (DNI/Cédula):</label>
+                                        <input type="text" name="documento" value="@review.Documento" class="input-text" style="width:100%; max-width: 300px; padding: 8px; border-radius: 6px; border: 1px solid #ddd;" />
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="display:block; font-size: 12px; font-weight:700; margin-bottom:4px;">Adjuntar nuevo documento (PDF, imagen, etc. - opcional):</label>
+                                        <input type="file" name="documentFile" style="font-size: 12px;" />
+                                        @if (!string.IsNullOrEmpty(review.DocumentPath))
+                                        {
+                                            <div id="file-indicator-@review.Id" style="font-size:11px; color:#666; margin-top:4px; display:flex; align-items:center; gap:8px;">
+                                                <span>Archivo actual cargado.</span>
+                                                <label style="cursor:pointer; color:#c0392b; font-weight:700;">
+                                                    <input type="checkbox" name="keepCurrentFile" value="false" onchange="toggleRemoveFile(@review.Id, this)" /> Eliminar archivo actual
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="display:block; font-size: 12px; font-weight:700; margin-bottom:4px;">Comentario:</label>
+                                        <textarea name="comment" required style="width:100%; min-height: 80px; padding: 10px; border-radius: 6px; border: 1px solid #ddd; font-family:inherit; font-size:13px;">@review.Comment</textarea>
+                                    </div>
+
+                                    <div style="display:flex; gap:10px;">
+                                        <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                                        <button type="button" onclick="hideEditForm(@review.Id)" class="btn btn-sm btn-outline" style="border-color:#ccc; color:#555;">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        }
+
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Formulario para dejar reseña -->
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div style="background: #fdfaf9; border: 1px solid rgba(229, 190, 179, 0.4); border-radius: 16px; padding: 2rem; box-shadow: var(--soft-shadow);">
+                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 800; color: #a8320e; margin: 0 0 1.2rem 0;">Dejar una reseña</h3>
+                
+                <form asp-controller="Reviews" asp-action="Create" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="ProductId" value="@Model.IdProduct" />
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; font-size: 13px; font-weight:800; color:var(--neutral); margin-bottom: 6px;">Calificación:</label>
+                        <!-- Selector de estrellas interactivas -->
+                        <div class="star-rating" style="display:flex; gap:6px; flex-direction: row-reverse; justify-content: flex-end;">
+                            <input type="radio" id="star5" name="Rating" value="5" style="display:none;" required /><label for="star5" class="star-label" onclick="setStars(5)" style="cursor:pointer; color:#ccc;"><span class="material-symbols-outlined" style="font-size: 28px;">star</span></label>
+                            <input type="radio" id="star4" name="Rating" value="4" style="display:none;" /><label for="star4" class="star-label" onclick="setStars(4)" style="cursor:pointer; color:#ccc;"><span class="material-symbols-outlined" style="font-size: 28px;">star</span></label>
+                            <input type="radio" id="star3" name="Rating" value="3" style="display:none;" /><label for="star3" class="star-label" onclick="setStars(3)" style="cursor:pointer; color:#ccc;"><span class="material-symbols-outlined" style="font-size: 28px;">star</span></label>
+                            <input type="radio" id="star2" name="Rating" value="2" style="display:none;" /><label for="star2" class="star-label" onclick="setStars(2)" style="cursor:pointer; color:#ccc;"><span class="material-symbols-outlined" style="font-size: 28px;">star</span></label>
+                            <input type="radio" id="star1" name="Rating" value="1" style="display:none;" /><label for="star1" class="star-label" onclick="setStars(1)" style="cursor:pointer; color:#ccc;"><span class="material-symbols-outlined" style="font-size: 28px;">star</span></label>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.2rem;">
+                        <label style="display:block; font-size: 13px; font-weight:800; color:var(--neutral); margin-bottom: 6px;">Documento / Identificación (DNI o Cédula - opcional):</label>
+                        <input type="text" name="Documento" placeholder="Ej: 8-999-9999" style="width:100%; max-width: 350px; min-height: 44px; padding: 0 16px; border: 1px solid #ddd5d0; border-radius: 8px; outline:none; background:white;" />
+                    </div>
+
+                    <div style="margin-bottom: 1.2rem;">
+                        <label style="display:block; font-size: 13px; font-weight:800; color:var(--neutral); margin-bottom: 6px;">Insertar / Subir Documento Adjunto (PDF, Word, imagen - opcional):</label>
+                        <input type="file" name="documentFile" style="font-size: 13px; cursor: pointer;" />
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; font-size: 13px; font-weight:800; color:var(--neutral); margin-bottom: 6px;">Comentario:</label>
+                        <textarea name="Comment" required placeholder="Cuéntanos qué te pareció este plato..." style="width:100%; min-height: 100px; padding: 12px; border: 1px solid #ddd5d0; border-radius: 8px; font-family:inherit; font-size:14px; outline:none; resize:vertical; background:white;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="min-height:48px; padding-inline:30px;">
+                        Enviar Reseña
+                    </button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div style="background: var(--surface-2); border: 1px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center;">
+                <p style="margin:0 0 12px 0; color:#555;">Debes iniciar sesión para poder calificar este plato e insertar una reseña.</p>
+                <a href="/Identity/Account/Login" class="btn btn-sm btn-primary">Iniciar Sesión</a>
+            </div>
+        }
+    </div>
+
+    <!-- Hubo un cambio aquí para insertar el related-grid -->
+    <!-- Sección También puede gustarte -->
+    <div class="related-section">
+        <h2 class="related-title">También puede gustarte</h2>
+        <div class="related-grid">
+            @foreach (var relProd in ViewBag.RelatedProducts as IEnumerable<Comidasa.Models.Product>)
+            {
+                <a href="@Url.Action("Details", "Home", new { id = relProd.IdProduct })" class="related-card">
+                    <div class="rc-image-area">
+                        @if (!string.IsNullOrEmpty(relProd.ImagenProduct))
+                        {
+                            <img src="@relProd.ImagenProduct" alt="@relProd.NameProduct">
+                        }
+                        else
+                        {
+                            <img src="~/Assets/plato.png" alt="@relProd.NameProduct">
+                        }
+                    </div>
+                    <div class="rc-info">
+                        <span class="rc-name">@relProd.NameProduct</span>
+                        <span class="rc-price">B/. @relProd.Price.ToString("0.00")</span>
+                    </div>
+                </a>
+            }
+
+            <div class="delivery-card">
+                <div class="delivery-icon">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                </div>
+                <h3>Entrega rápida</h3>
+                <p>Ordena tu plato favorito y recíbelo fresco en poco tiempo.</p>
+                <a asp-action="Index">Ver catálogo</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-favorite').click(function () {
+                var btn = $(this);
+                var productId = btn.data('id');
+
+                $.post('/Favorites/ToggleFavorite', { productId: productId }, function (response) {
+                    if (response.success) {
+                        if (response.isFavorite) {
+                            btn.find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24");
+                            btn.find('.fav-text').text('Quitar de favoritos');
+                        } else {
+                            btn.find('.material-symbols-outlined').css('font-variation-settings', "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24");
+                            btn.find('.fav-text').text('Agregar a favoritos');
+                        }
+                    } else {
+                        alert(response.message);
+                        if (response.message === "Debe iniciar sesión") {
+                            window.location.href = '/Identity/Account/Login';
+                        }
+                    }
+                });
+            });
+        });
+
+        function setStars(rating) {
+            $('.star-label').css('color', '#ccc');
+            for (let i = 1; i <= rating; i++) {
+                $('#star' + i).next('label').css('color', '#a87b1e');
+            }
+        }
+
+        function showEditForm(id) {
+            $('#review-display-' + id).hide();
+            $('#review-edit-' + id).show();
+        }
+
+        function hideEditForm(id) {
+            $('#review-edit-' + id).hide();
+            $('#review-display-' + id).show();
+        }
+
+        function toggleRemoveFile(id, checkbox) {
+            if (checkbox.checked) {
+                $('#file-indicator-' + id).css('text-decoration', 'line-through');
+            } else {
+                $('#file-indicator-' + id).css('text-decoration', 'none');
+            }
+        }
+    </script>
+}

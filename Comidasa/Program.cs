@@ -7,15 +7,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+    
+    // Configurar bloqueo (lockout) por intentos fallidos
+    options.Lockout.MaxFailedAccessAttempts = 4; // Limitar a 4 intentos
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Tiempo de bloqueo
+    options.Lockout.AllowedForNewUsers = true; // Aplicar a todos los usuarios
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Registrar el servicio de envío de correos
+// Registrar el servicio de envÃ­o de correos
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, Comidasa.Services.EmailSender>();
 builder.Services.AddControllersWithViews();
 
@@ -40,13 +49,16 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Configuraciones de Seguridad para Cumplimiento
 app.Use(async (context, next) =>
 {
-    // Content Security Policy (Prevención de XSS)
-    // Se agregó https://images.unsplash.com a img-src para permitir cargar las imágenes del menú
+    // Content Security Policy (PrevenciÃ³n de XSS)
+    // Se agregÃ³ https://images.unsplash.com a img-src para permitir cargar las imÃ¡genes del menÃº
     context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://lh3.googleusercontent.com; frame-ancestors 'none';");
     
     // Evitar que el navegador intente adivinar el tipo de contenido (MIME-sniffing)

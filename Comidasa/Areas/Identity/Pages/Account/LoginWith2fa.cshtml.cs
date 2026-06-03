@@ -83,12 +83,7 @@ namespace Comidasa.Areas.Identity.Pages.Account
                 throw new InvalidOperationException($"Incapaz de cargar al usuario de dos factores.");
             }
 
-            // Verificar si el código ha expirado en la caché (30 segundos)
-            if (!_cache.TryGetValue($"2FA_Time_{user.Id}", out _))
-            {
-                ModelState.AddModelError(string.Empty, "El código ha expirado después de 30 segundos. Por favor, solicita uno nuevo.");
-                return Page();
-            }
+            // El código no expirará manualmente aquí. Se usará el tiempo de vida por defecto del token de Identity.
 
             // Clean up the code.
             var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
@@ -124,8 +119,7 @@ namespace Comidasa.Areas.Identity.Pages.Account
 
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
             
-            // Reiniciar el tiempo de expiración (30 segundos)
-            _cache.Set($"2FA_Time_{user.Id}", DateTime.UtcNow, TimeSpan.FromSeconds(30));
+            // Ya no limitamos el tiempo de expiración en caché manualmente.
 
             await _emailSender.SendEmailAsync(
                 user.Email,

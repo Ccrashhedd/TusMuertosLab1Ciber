@@ -2,14 +2,26 @@
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
-<ul class="nav nav-pills flex-column">
-    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Password</a></li>
+<ul class="nav nav-pills flex-column" style="font-family: 'Plus Jakarta Sans', sans-serif; list-style: none; padding: 0; margin: 0;">
+    <li class="nav-item" style="margin-bottom: 12px;">
+        <a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index" style="display: block; border-radius: 20px; font-weight: 700; padding: 0.8rem 1.5rem; transition: all 0.2s; @(ManageNavPages.IndexNavClass(ViewContext) == "active" ? "background-color: #b52a00; color: white;" : "background-color: #f2f0eb; color: #666;")">Perfil</a>
+    </li>
+    <li class="nav-item" style="margin-bottom: 12px;">
+        <a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email" style="display: block; border-radius: 20px; font-weight: 700; padding: 0.8rem 1.5rem; transition: all 0.2s; @(ManageNavPages.EmailNavClass(ViewContext) == "active" ? "background-color: #b52a00; color: white;" : "background-color: #f2f0eb; color: #666;")">Email</a>
+    </li>
+    <li class="nav-item" style="margin-bottom: 12px;">
+        <a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword" style="display: block; border-radius: 20px; font-weight: 700; padding: 0.8rem 1.5rem; transition: all 0.2s; @(ManageNavPages.ChangePasswordNavClass(ViewContext) == "active" ? "background-color: #b52a00; color: white;" : "background-color: #f2f0eb; color: #666;")">Contraseña</a>
+    </li>
     @if (hasExternalLogins)
     {
-        <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>
+        <li id="external-logins" class="nav-item" style="margin-bottom: 12px;">
+            <a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins" style="display: block; border-radius: 20px; font-weight: 700; padding: 0.8rem 1.5rem; transition: all 0.2s; @(ManageNavPages.ExternalLoginsNavClass(ViewContext) == "active" ? "background-color: #b52a00; color: white;" : "background-color: #f2f0eb; color: #666;")">Logins externos</a>
+        </li>
     }
-    <li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">Two-factor authentication</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Personal data</a></li>
+    <li class="nav-item" style="margin-bottom: 12px;">
+        <a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication" style="display: block; border-radius: 20px; font-weight: 700; padding: 0.8rem 1.5rem; transition: all 0.2s; @(ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext) == "active" ? "background-color: #b52a00; color: white;" : "background-color: #f2f0eb; color: #666;")">Autenticación 2 Factores</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData" style="display: block; border-radius: 20px; font-weight: 700; padding: 0.8rem 1.5rem; transition: all 0.2s; @(ManageNavPages.PersonalDataNavClass(ViewContext) == "active" ? "background-color: #b52a00; color: white;" : "background-color: #f2f0eb; color: #666;")">Datos Personales</a>
+    </li>
 </ul>

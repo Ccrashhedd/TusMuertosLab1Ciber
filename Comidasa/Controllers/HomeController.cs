@@ -24,6 +24,34 @@ public class HomeController : Controller
         return View(products);
     }
 
+    public async Task<IActionResult> Details(int id)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.IdProduct == id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        // Obtener productos relacionados
+        var relatedProducts = await _context.Products
+            .Where(p => p.IdProduct != id)
+            .Take(2)
+            .ToListAsync();
+            
+        ViewBag.RelatedProducts = relatedProducts;
+
+        // Cargar reseñas reales con la información del usuario
+        var reviews = await _context.Reviews
+            .Include(r => r.User)
+            .Where(r => r.ProductId == id)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+            
+        ViewBag.Reviews = reviews;
+
+        return View(product);
+    }
+
     public IActionResult Privacy()
     {
         return View();

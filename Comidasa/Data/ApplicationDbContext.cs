@@ -11,4 +11,6 @@ public class ApplicationDbContext : IdentityDbContext
     }
 
     public DbSet<Comidasa.Models.Product> Products { get; set; }
+    public DbSet<Comidasa.Models.Favorite> Favorites { get; set; }
+    public DbSet<Comidasa.Models.Review> Reviews { get; set; }
 }

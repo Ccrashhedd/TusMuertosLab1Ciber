@@ -3,11 +3,16 @@
 ## Descripción del Proyecto
 Comidasa es una aplicación web transaccional para un restaurante, desarrollada con un enfoque estricto en **Seguridad de Software**. El proyecto ha sido refactorizado desde una estructura PHP/HTML básica hacia una arquitectura empresarial **Modelo-Vista-Controlador (MVC)** utilizando el framework moderno **ASP.NET Core (C#)**.
 
-## Arquitectura y Tecnologías
-- **Backend:** C# / ASP.NET Core 9.0 MVC.
-- **Frontend:** Razor Pages (`.cshtml`), HTML5, CSS3 nativo (Vanilla CSS) con diseño Glassmorphism y UI responsiva.
-- **Base de Datos:** SQLite (Configurable fácilmente para MySQL) a través de **Entity Framework Core** (ORM).
-- **Gestión de Identidad:** ASP.NET Core Identity.
+## Arquitectura y Estructura de Carpetas (MVC)
+La aplicación sigue estrictamente el patrón arquitectónico Modelo-Vista-Controlador para separar la lógica de negocio, la interfaz de usuario y las reglas de enrutamiento:
+
+- 📂 **`Models/` (Modelos)**: Contiene las estructuras de datos (Ej. `Product.cs`). Aquí se define qué propiedades tiene cada elemento (nombre, precio, etc.) y cómo se comunican con la base de datos.
+- 📂 **`Views/` (Vistas)**: Contiene la interfaz gráfica del usuario. Usa archivos `.cshtml` (C# + HTML / Razor).
+  - `Home/`: Vistas públicas como el catálogo (`Index.cshtml`) y el detalle del producto (`Details.cshtml`).
+  - `Shared/`: Componentes reutilizables como la barra de navegación (`_Layout.cshtml`) y botones de login (`_LoginPartial.cshtml`).
+- 📂 **`Controllers/` (Controladores)**: Contiene la lógica de negocio (`HomeController.cs`). Son los intermediarios: reciben la petición web, buscan datos en los **Modelos** y se los entregan a las **Vistas** para ser mostrados.
+- 📂 **`Areas/Identity/` (Gestión de Usuarios)**: Contiene el sistema de autenticación de ASP.NET Core Identity. Usa un patrón llamado **Razor Pages** donde la Vista (`.cshtml`) y su mini-controlador o Code-Behind (`.cshtml.cs`) están juntos para manejar flujos de seguridad (Login, Registro) de forma aislada.
+- 📂 **`wwwroot/`**: Archivos públicos estáticos (Imágenes, CSS, JavaScript).
 
 ## Controles de Seguridad Implementados (OWASP Top 10)
 
@@ -15,34 +20,34 @@ El proyecto mitiga proactivamente las vulnerabilidades más comunes identificada
 
 ### 1. Inyección SQL (SQLi)
 **Problema mitigado:** Ejecución de comandos maliciosos en la base de datos a través de entradas del usuario.
-**Solución implementada:** Se prohibieron las consultas directas (`raw SQL`) y las llamadas inseguras. Toda comunicación con la base de datos se realiza a través de **Entity Framework Core (EF Core)**, el cual genera automáticamente **consultas parametrizadas**. Esto separa estructuralmente el comando de los datos ingresados por el usuario, haciendo que los payloads maliciosos sean tratados estrictamente como texto, anulando la inyección.
+**Solución implementada:** Se prohibieron las consultas directas (`raw SQL`) y las llamadas inseguras. Toda comunicación con la base de datos se realiza a través de **Entity Framework Core (EF Core)**, el cual genera automáticamente **consultas parametrizadas**.
 
 ### 2. Cross-Site Scripting (XSS)
 **Problema mitigado:** Inyección de scripts maliciosos (ej. JavaScript) en las vistas del Frontend.
 **Solución implementada:** 
-- **Razor HTML-Encoding:** El motor de plantillas de ASP.NET Core (`Razor`) codifica automáticamente (HTML-encode) cualquier valor o variable que se imprima en pantalla. Si un usuario introduce `<script>alert('hack')</script>`, se renderiza como texto inofensivo.
-- **Content Security Policy (CSP):** Se implementó un middleware global en `Program.cs` que inyecta la cabecera `Content-Security-Policy`, la cual bloquea explícitamente la carga y ejecución de scripts ajenos al origen de la aplicación.
+- **Razor HTML-Encoding:** El motor de plantillas de ASP.NET Core (`Razor`) codifica automáticamente cualquier valor o variable que se imprima en pantalla.
+- **Content Security Policy (CSP):** Se implementó un middleware global en `Program.cs` que inyecta la cabecera `Content-Security-Policy`.
 
 ### 3. Falsificación de Petición en Sitios Cruzados (CSRF)
 **Problema mitigado:** Ataques donde un usuario autenticado es engañado para enviar peticiones no deseadas a la aplicación.
-**Solución implementada:** Se utilizan de manera nativa los **Tokens Anti-Falsificación (Anti-Forgery Tokens)**. Cada formulario generado en Razor incluye un token único (`__RequestVerificationToken`) que se valida obligatoriamente en el servidor. El backend rechazará solicitudes provenientes de scripts externos o dominios de terceros.
+**Solución implementada:** Se utilizan de manera nativa los **Tokens Anti-Falsificación (Anti-Forgery Tokens)**.
 
-### 4. Autenticación y Gestión de Sesiones Rota
-**Problema mitigado:** Robo de credenciales, almacenamiento inseguro de contraseñas.
-**Solución implementada:** Se integró **ASP.NET Core Identity**:
-- **Hashing Robusto:** Las contraseñas nunca se almacenan en texto plano. Se emplea PBKDF2 (Password-Based Key Derivation Function 2) con HMAC-SHA256, con generación de *sal* única por usuario y miles de iteraciones.
-- **Autenticación de 2 Pasos (2FA):** Sistema preparado para habilitar tokens temporales de tiempo (TOTP) o correo electrónico como segunda capa de seguridad.
-- **Recuperación Segura:** La funcionalidad de recuperación de contraseñas no da información del estado de la cuenta y usa tokens limitados en el tiempo.
-- **Validación de Contraseñas:** Se fuerzan políticas estrictas (uso de caracteres especiales, números, mayúsculas y longitud mínima).
+### 4. Autenticación y Gestión de Sesiones Rota (Y Mejoras de Laboratorio)
+**Problema mitigado:** Robo de credenciales, almacenamiento inseguro de contraseñas y exposición de datos en tránsito.
+**Solución implementada:** 
+- **Hashing Robusto:** Las contraseñas se almacenan con algoritmos robustos (PBKDF2 con HMAC-SHA256).
+- **Protección de Datos en Tránsito (HTTP POST vs GET):** Se instruyó sobre la importancia de evitar "Seguridad por oscuridad". Las credenciales nunca viajan en la URL (GET), sino protegidas en el Cuerpo (Body) de las peticiones mediante HTTP POST y encriptadas vía HTTPS.
+- **Servicio de Correos Simulados (EmailSender):** Se configuró un servicio para envío de correos (verificables en la consola del servidor) para habilitar confirmaciones de cuenta y Autenticación de 2 Factores (2FA).
+- **Personalización de Interfaz Segura:** Se extrajeron y tradujeron al español las pantallas internas de Identity (como "Eliminar Datos Personales", "Contraseña" y "Autenticación 2FA") aplicando el diseño corporativo de Comidasa para evitar interfaces rotas o en inglés que generen desconfianza en el usuario.
 
 ### 5. Configuraciones y Cabeceras de Seguridad
-En la inicialización del Request Pipeline, se agregaron cabeceras HTTP de seguridad:
-- `X-Frame-Options: DENY`: Evita ataques de **Clickjacking** al prohibir que la aplicación sea embebida en `<iframe>` o `<frame>` externos.
-- `X-Content-Type-Options: nosniff`: Instruye al navegador a no intentar adivinar los tipos MIME, forzando la interpretación declarada, lo cual reduce ataques basados en descargas de archivos ocultos.
-- `HSTS (HTTP Strict Transport Security)`: Fuerza que toda la comunicación sea estrictamente por canal cifrado HTTPS, evitando ataques de tipo *Man-in-the-Middle* y *Downgrade*.
+En la inicialización del Request Pipeline (`Program.cs`), se agregaron cabeceras HTTP de seguridad:
+- `X-Frame-Options: DENY`: Evita ataques de **Clickjacking**.
+- `X-Content-Type-Options: nosniff`: Instruye al navegador a no intentar adivinar los tipos MIME.
+- `HSTS (HTTP Strict Transport Security)`: Fuerza la comunicación cifrada HTTPS.
 
 ## Guía de Despliegue Local
 1. Navegar a la carpeta del proyecto `Comidasa`.
-2. Restaurar dependencias y compilar: `dotnet build`
-3. Iniciar la aplicación y el servidor Kestrel integrado: `dotnet run`
-4. Acceder vía navegador (HTTPS predeterminado activado para garantizar cifrado de tránsito).
+2. Restaurar dependencias y ejecutar migraciones si es necesario.
+3. Iniciar el servidor con recarga en vivo: `dotnet watch run`
+4. Acceder vía navegador (generalmente a través de `http://localhost:5186`).
