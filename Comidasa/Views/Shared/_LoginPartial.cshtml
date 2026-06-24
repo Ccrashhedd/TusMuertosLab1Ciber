@@ -4,13 +4,19 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" style="margin: 0; display: inline-block;">
+    var displayName = User.Identity?.Name ?? "Usuario";
+    if (displayName.Contains("@"))
+    {
+        displayName = displayName.Split('@')[0];
+    }
+
+    <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" style="margin: 0; display: inline-block;">
         <div style="display: flex; align-items: center; gap: 14px;">
-            <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage" style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--muted); font-size: 14px;">
+            <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Administrar Perfil" style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--muted); font-size: 14px; text-decoration: none;">
                 <span class="material-symbols-outlined">person</span>
-                <span class="user-email-text">@User.Identity?.Name</span>
+                <span class="user-email-text" style="display: inline-block !important; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;">@displayName</span>
             </a>
-            <button type="submit" class="btn btn-sm btn-outline">
+            <button type="submit" class="btn btn-sm btn-outline" style="min-height: auto; padding: 0.3rem 0.8rem; font-size: 12px;">
                 Salir
             </button>
         </div>

@@ -872,7 +872,7 @@ h3,
 
 @media (max-width: 800px) {
     .user-email-text {
-        display: none;
+        display: inline-block;
     }
 
     .container {
@@ -1379,6 +1379,7 @@ h3,
     font-size: 1.8rem;
     font-weight: 800;
     color: #a8320e;
+    white-space: nowrap;
 }
 
 .details-description {
@@ -1624,4 +1625,17 @@ h3,
 .delivery-card a:hover {
     color: #8a280b;
 }
+
+@media (max-width: 576px) {
+    .price-box {
+        padding: 0.8rem 1rem;
+    }
+    .price-value {
+        font-size: 1.4rem;
+    }
+    .price-label {
+        font-size: 0.85rem;
+    }
+}
+
 

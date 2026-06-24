@@ -17,34 +17,8 @@ namespace Comidasa.Services
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            var smtpHost = _configuration["Smtp:Host"];
-            var smtpPort = int.Parse(_configuration["Smtp:Port"] ?? "587");
-            var smtpUser = _configuration["Smtp:Username"];
-            var smtpPass = _configuration["Smtp:Password"];
-
-            if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
-            {
-                _logger.LogWarning("Configuración SMTP incompleta. No se pudo enviar el correo a {Email}", email);
-                return;
-            }
-
-            using var client = new SmtpClient(smtpHost, smtpPort)
-            {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(smtpUser, smtpPass)
-            };
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(smtpUser, "Seguridad Comidasa")
-            };
-            
-            mailMessage.Subject = subject;
-
-            // Remove HTML tags for the plain text version
+            // 1. Extraer el código y limpiar las instrucciones
             string plainText = System.Text.RegularExpressions.Regex.Replace(htmlMessage, "<.*?>", string.Empty);
-            
-            // Extract the 6-digit verification code using robust regex
             string code = "";
             var match = System.Text.RegularExpressions.Regex.Match(htmlMessage, @"<b>(\d+)</b>");
             if (match.Success)
@@ -57,7 +31,6 @@ namespace Comidasa.Services
                 code = matchBold.Success ? matchBold.Groups[1].Value : htmlMessage;
             }
 
-            // Clean the instruction message to show beneath the code
             string cleanInstruction = htmlMessage;
             if (match.Success)
             {
@@ -67,14 +40,12 @@ namespace Comidasa.Services
                     .Replace("Su nuevo código de seguridad es: ", "")
                     .Trim();
                 
-                // Capitalize first letter
                 if (cleanInstruction.Length > 0)
                 {
                     cleanInstruction = char.ToUpper(cleanInstruction[0]) + cleanInstruction.Substring(1);
                 }
             }
 
-            // Determine context text to show in the description
             string actionDescription = "validar tu cuenta";
             if (htmlMessage.Contains("iniciar sesión"))
             {
@@ -89,7 +60,7 @@ namespace Comidasa.Services
                 ? $"<p style='color: #4b5563; font-size: 14px; text-align: center; margin-bottom: 24px; line-height: 1.5; font-family: sans-serif;'>{cleanInstruction}</p>"
                 : "";
 
-            // Build a responsive HTML email structure using brand colors (#a8320e)
+            // 2. Construir el HTML responsivo
             string fullHtml = $@"
             <!DOCTYPE html>
             <html lang='es'>
@@ -132,21 +103,45 @@ namespace Comidasa.Services
             </body>
             </html>";
 
-            // Add alternate views
-            mailMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(plainText, null, "text/plain"));
-            mailMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(fullHtml, null, "text/html"));
+            // 3. Registrar el correo en el Simulador de Correos (Memoria)
+            EmailTracker.AddEmail(email, subject, fullHtml);
 
-            mailMessage.To.Add(email);
+            // 4. Intentar enviar por SMTP real si está configurado
+            var smtpHost = _configuration["Smtp:Host"];
+            var smtpPort = int.Parse(_configuration["Smtp:Port"] ?? "587");
+            var smtpUser = _configuration["Smtp:Username"];
+            var smtpPass = _configuration["Smtp:Password"];
+
+            if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+            {
+                _logger.LogWarning("Configuración SMTP incompleta. Correo guardado únicamente en el simulador local para {Email}", email);
+                return;
+            }
 
             try
             {
+                using var client = new SmtpClient(smtpHost, smtpPort)
+                {
+                    EnableSsl = true,
+                    Credentials = new NetworkCredential(smtpUser, smtpPass)
+                };
+
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(smtpUser, "Seguridad Comidasa")
+                };
+                mailMessage.Subject = subject;
+                mailMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(plainText, null, "text/plain"));
+                mailMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(fullHtml, null, "text/html"));
+                mailMessage.To.Add(email);
+
                 await client.SendMailAsync(mailMessage);
                 _logger.LogInformation("Correo enviado exitosamente a {Email}", email);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al enviar el correo a {Email}", email);
-                throw;
+                _logger.LogError(ex, "Error al enviar el correo real a {Email}. El correo está disponible en el simulador local.", email);
+                // No lanzamos la excepción para que el flujo local/desarrollo no falle si no hay conexión o SMTP no responde
             }
         }
     }

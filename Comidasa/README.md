@@ -51,3 +51,24 @@ En la inicialización del Request Pipeline (`Program.cs`), se agregaron cabecera
 2. Restaurar dependencias y ejecutar migraciones si es necesario.
 3. Iniciar el servidor con recarga en vivo: `dotnet watch run`
 4. Acceder vía navegador (generalmente a través de `http://localhost:5186`).
+
+## Exposición Pública con ngrok (para Presentaciones)
+
+Para presentar la aplicación en vivo desde tu máquina local sin necesidad de desplegarla en un hosting/nube externo, puedes utilizar **ngrok** para crear un túnel seguro temporal.
+
+### Requisitos previos
+1. Descargar e instalar [ngrok](https://ngrok.com/).
+2. Iniciar sesión y autenticar tu terminal ejecutando el comando de tu cuenta:
+   ```bash
+   ngrok config add-authtoken <TU_TOKEN>
+   ```
+
+### Pasos para exponer el proyecto
+1. Asegúrate de que el servidor local de Comidasa esté en ejecución (usualmente en `http://localhost:5186`).
+2. En una nueva terminal, abre el túnel indicando el puerto y reescribiendo la cabecera `Host` (requerido para evitar errores `400 Bad Request` en ASP.NET Core):
+   ```bash
+   ngrok http http://localhost:5186 --host-header="localhost:5186"
+   ```
+3. Copia la dirección pública generada (de tipo `https://xxxx.ngrok-free.app`).
+4. Usa esa dirección en tu presentación para que cualquier persona o dispositivo móvil pueda acceder a tu app en tiempo real.
+

@@ -1,0 +1,97 @@
+@model IEnumerable<Comidasa.Services.SentEmailDto>
+@{
+    ViewData["Title"] = "Simulador de Correos";
+}
+
+<div class="emails-dashboard" style="max-width: 1100px; margin: 0 auto; padding: 20px; font-family: 'Work Sans', sans-serif; color: #262626;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h1 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 800; color: #a8320e; margin:0;">
+                <span class="material-symbols-outlined" style="font-size: 32px; vertical-align: middle; margin-right: 8px;">mail</span>
+                Simulador de Correos
+            </h1>
+            <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">Aquí se muestran los códigos 2FA y correos de validación enviados localmente.</p>
+        </div>
+        <a href="/" class="btn btn-outline" style="border-color: #ddd; color: #555; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; height: 38px; display: inline-flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span> Regresar al Catálogo
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div style="background: white; border: 1px dashed rgba(229, 190, 179, 0.6); border-radius: 12px; padding: 50px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+            <span class="material-symbols-outlined" style="font-size: 48px; color: #ccc;">mail_outline</span>
+            <h3 style="margin: 15px 0 5px 0; color: #555; font-size: 18px;">No hay correos en el historial</h3>
+            <p style="color: #888; font-size: 13px; max-width: 400px; margin: 0 auto;">Los correos que envíe el sistema (códigos 2FA, registro de cuenta, etc.) se guardarán aquí automáticamente en tiempo real para tu presentación.</p>
+        </div>
+    }
+    else
+    {
+        <div class="emails-layout" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+            <div class="emails-list" style="display: flex; flex-direction: column; gap: 12px;">
+                @foreach (var email in Model)
+                {
+                    // Generate a unique ID to collapse/expand
+                    var uniqueId = "email-" + email.Timestamp.Ticks;
+                    
+                    // Try to find if there is a 6-digit code in the subject/body to display as badge
+                    string codeBadge = "";
+                    var match = System.Text.RegularExpressions.Regex.Match(email.Body, @"<div style='font-size: 32px;[^>]*>\s*(\d+)\s*</div>");
+                    if (match.Success)
+                    {
+                        codeBadge = match.Groups[1].Value;
+                    }
+                    
+                    <div class="email-card" style="background: white; border: 1px solid rgba(229, 190, 179, 0.3); border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.3s ease;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap: 10px; margin-bottom: 12px;">
+                            <div>
+                                <span style="font-size: 11px; background: rgba(242, 76, 5, 0.08); color: #a8320e; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase;">
+                                    Para: @email.To
+                                </span>
+                                <h3 style="margin: 8px 0 4px 0; font-size: 16px; font-weight: 700; color: #1a1a1a;">@email.Subject</h3>
+                                <div style="font-size: 11px; color: #999; display: flex; align-items: center; gap: 4px;">
+                                    <span class="material-symbols-outlined" style="font-size:13px;">schedule</span>
+                                    @email.Timestamp.ToString("dd MMM yyyy, HH:mm:ss")
+                                </div>
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(codeBadge))
+                            {
+                                <div style="background: #fdf5f3; border: 1px dashed #d18d77; padding: 8px 12px; border-radius: 8px; text-align: center; align-self: center;">
+                                    <div style="font-size: 10px; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">CÓDIGO 2FA</div>
+                                    <div style="font-size: 18px; font-weight: 800; color: #a8320e; font-family: monospace;">@codeBadge</div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <!-- Toggle Button to view HTML -->
+                        <button type="button" onclick="toggleEmailBody('@uniqueId')" class="btn btn-sm btn-outline" style="font-size:11px; height: 30px; padding: 0 12px; border-color: #ddd; color: #555; display: inline-flex; align-items: center; gap: 4px;">
+                            <span class="material-symbols-outlined" style="font-size:14px;">visibility</span> Ver Contenido Completo
+                        </button>
+                        
+                        <!-- Collapsible Body Panel -->
+                        <div id="@uniqueId" style="display:none; margin-top: 15px; border-top: 1px dashed rgba(229, 190, 179, 0.3); padding-top: 15px;">
+                            <div style="border: 1px solid #eee; border-radius: 8px; background: #fdfdfd; overflow: hidden; padding: 10px;">
+                                <!-- Iframe to render exact HTML without leaking css styles -->
+                                <iframe srcdoc="@email.Body" style="width:100%; min-height: 480px; border:0; display:block;" title="Vista de correo"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function toggleEmailBody(id) {
+            var el = document.getElementById(id);
+            if (el.style.display === "none") {
+                el.style.display = "block";
+            } else {
+                el.style.display = "none";
+            }
+        }
+    </script>
+}

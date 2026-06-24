@@ -16,10 +16,18 @@
         <div class="container nav-wrap">
             <a href="~/" class="brand">Comidasa</a>
             <nav class="nav-links" aria-label="Navegación principal">
-                <a href="~/" class="active">Catálogo</a>
-                @if (User.Identity.IsAuthenticated)
+                @{
+                    var currentPath = Context.Request.Path.Value ?? "";
+                    var isCatalogActive = currentPath == "/" || 
+                                          currentPath.Equals("/Home", StringComparison.OrdinalIgnoreCase) || 
+                                          currentPath.StartsWith("/Home/Index", StringComparison.OrdinalIgnoreCase) || 
+                                          currentPath.StartsWith("/Home/Details", StringComparison.OrdinalIgnoreCase);
+                    var isFavoritesActive = currentPath.StartsWith("/Favorites", StringComparison.OrdinalIgnoreCase);
+                }
+                <a href="~/" class='@(isCatalogActive ? "active" : "")'>Catálogo</a>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    <a href="~/Favorites">Mis Favoritos</a>
+                    <a href="~/Favorites" class='@(isFavoritesActive ? "active" : "")'>Mis Favoritos</a>
                 }
             </nav>
             <div class="nav-actions">
@@ -45,8 +53,9 @@
                 <a href="#">Sucursales</a>
             </div>
             <div>
-                <h3>Soporte</h3>
+                <h3>Soporte / Dev</h3>
                 <a href="#">Contacto</a>
+                <a href="/Home/Emails" style="color: #f24c05; font-weight: 700;">Simulador de Correos</a>
                 <a href="#">Términos del servicio</a>
             </div>
             <div>
@@ -61,6 +70,44 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/Js/navegacion.js"></script>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <script>
+            (function () {
+                // Temporizador de inactividad (AFK) - 3 minutos (180,000 ms)
+                var afkTimeout = 3 * 60 * 1000;
+                var afkTimer;
+
+                function resetAfkTimer() {
+                    clearTimeout(afkTimer);
+                    afkTimer = setTimeout(logoutUserAfk, afkTimeout);
+                }
+
+                function logoutUserAfk() {
+                    console.log("Usuario AFK detectado. Cerrando sesión...");
+                    var logoutForm = document.getElementById('logoutForm');
+                    if (logoutForm) {
+                        logoutForm.submit();
+                    } else {
+                        var tempForm = document.createElement('form');
+                        tempForm.method = 'post';
+                        tempForm.action = '/Identity/Account/Logout?returnUrl=%2F';
+                        document.body.appendChild(tempForm);
+                        tempForm.submit();
+                    }
+                }
+
+                var activityEvents = ['mousemove', 'keypress', 'mousedown', 'touchstart', 'scroll'];
+                activityEvents.forEach(function (eventName) {
+                    document.addEventListener(eventName, resetAfkTimer, true);
+                });
+
+                resetAfkTimer();
+            })();
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

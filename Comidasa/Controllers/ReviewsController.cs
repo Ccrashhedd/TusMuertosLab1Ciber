@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -42,9 +43,18 @@ namespace Comidasa.Controllers
             review.UserId = userId;
             review.CreatedAt = DateTime.Now;
 
-            // Handle file upload
+            // Handle file upload with validation
             if (documentFile != null && documentFile.Length > 0)
             {
+                var extension = Path.GetExtension(documentFile.FileName).ToLowerInvariant();
+                var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+                
+                if (!allowedExtensions.Contains(extension))
+                {
+                    TempData["ErrorMessage"] = "Solo se permiten archivos PDF o imágenes (JPG, JPEG, PNG).";
+                    return RedirectToAction("Details", "Home", new { id = review.ProductId });
+                }
+
                 try
                 {
                     // Create directory if not exists
@@ -103,13 +113,23 @@ namespace Comidasa.Controllers
                 return Forbid();
             }
 
-            review.Comment = comment;
-            review.Rating = rating;
-            review.Documento = documento ?? string.Empty;
-
-            // Handle file upload on Edit
+            // Handle file upload on Edit with validation
             if (documentFile != null && documentFile.Length > 0)
             {
+                var extension = Path.GetExtension(documentFile.FileName).ToLowerInvariant();
+                var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+                
+                if (!allowedExtensions.Contains(extension))
+                {
+                    TempData["ErrorMessage"] = "Solo se permiten archivos PDF o imágenes (JPG, JPEG, PNG).";
+                    var refererUrl = Request.Headers["Referer"].ToString();
+                    if (!string.IsNullOrEmpty(refererUrl))
+                    {
+                        return Redirect(refererUrl);
+                    }
+                    return RedirectToAction("Details", "Home", new { id = review.ProductId });
+                }
+
                 try
                 {
                     var uploadsFolder = Path.Combine(_environment.WebRootPath, "Uploads", "Reviews");
@@ -156,6 +176,10 @@ namespace Comidasa.Controllers
                     review.DocumentPath = null;
                 }
             }
+
+            review.Comment = comment;
+            review.Rating = rating;
+            review.Documento = documento ?? string.Empty;
 
             _context.Entry(review).State = EntityState.Modified;
             await _context.SaveChangesAsync();
